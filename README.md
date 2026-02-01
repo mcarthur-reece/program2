@@ -12,8 +12,8 @@ A Ruby on Rails web application for managing volunteers, events, and volunteer a
 
 ### 1. Clone the Repository
 ```bash
-git clone git@github.ncsu.edu:your-unity-id/volunteer_management_system.git
-cd volunteer_management_system
+git clone https://github.com/cjbhatna_ncstate/CSC_ECE_517_Spring_2026_Program_2.git
+cd CSC_ECE_517_Spring_2026_Program_2
 ```
 
 ### 2. Install Dependencies
