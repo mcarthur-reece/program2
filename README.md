@@ -1,24 +1,17 @@
-# README.
+# Volunteer Management System
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Admin Credentials
+- **Username**: admin
+- **Password**: password123
+- **Email**: admin@volunteer.org
 
-Things you may want to cover:
+## Setup Instructions
+1. Clone the repository
+2. Run `bundle install`
+3. Run `rails db:create db:migrate db:seed`
+4. Run `rails server`
+5. Navigate to `http://localhost:3000`
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Database Schema
+- Volunteers table: user accounts for volunteers
+- Admins table: admin account (pre-seeded)
