@@ -6,7 +6,7 @@ A Ruby on Rails web application for managing volunteers, events, and volunteer a
 
 - Ruby 3.3.x or higher
 - Rails 8.x
-- SQLite3 (comes with macOS and most Linux distributions)
+- postgresql
 
 ## Setup Instructions
 
@@ -23,6 +23,11 @@ bundle install
 
 ### 3. Set Up the Database
 ```bash
+# Ensure postgresql is running
+#on macOs:
+brew services start postgresql
+#on Linux:
+sudo service postgresql start
 # Create the database
 rails db:create
 
