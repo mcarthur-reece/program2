@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  get "volunteers/new"
+  get "volunteers/create"
+  get "volunteers/show"
+  get "volunteers/edit"
+  get "volunteers/update"
+  get "volunteers/destroy"
+  get "sessions/new"
+  get "sessions/create"
+  get "sessions/destroy"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
