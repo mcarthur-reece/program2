@@ -20,4 +20,21 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  # Root route
+  root "sessions#new"
+
+  # Session routes (login/logout)
+  get    "/login",   to: "sessions#new"
+  post   "/login",   to: "sessions#create"
+  delete "/logout",  to: "sessions#destroy"
+
+  # Volunteer registration and profile
+  get    "/signup",  to: "volunteers#new"
+  post   "/signup",  to: "volunteers#create"
+
+  # Volunteer resources
+  resources :volunteers, except: [ :new, :create ]
+
+  # Admin routes (placeholder for Person 3)
+  # get "/admin", to: "admin#dashboard"
 end

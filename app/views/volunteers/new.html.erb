@@ -1,2 +1,64 @@
-<h1>Volunteers#new</h1>
-<p>Find me in app/views/volunteers/new.html.erb</p>
+<div style="max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+  <h1>Volunteer Sign Up</h1>
+  
+  <%= form_with(model: @volunteer, url: signup_path, local: true) do |f| %>
+    <% if @volunteer.errors.any? %>
+      <div style="color: red; margin-bottom: 20px; padding: 10px; background-color: #fee; border: 1px solid red; border-radius: 4px;">
+        <h3><%= pluralize(@volunteer.errors.count, "error") %> prohibited this account from being saved:</h3>
+        <ul>
+          <% @volunteer.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :username, "Username: *" %>
+      <%= f.text_field :username, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :full_name, "Full Name: *" %>
+      <%= f.text_field :full_name, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :email, "Email: *" %>
+      <%= f.email_field :email, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :phone_number, "Phone Number:" %>
+      <%= f.text_field :phone_number, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :address, "Address:" %>
+      <%= f.text_area :address, rows: 3, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :skills_interests, "Skills / Interests:" %>
+      <%= f.text_area :skills_interests, rows: 3, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :password, "Password: * (minimum 6 characters)" %>
+      <%= f.password_field :password, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :password_confirmation, "Confirm Password: *" %>
+      <%= f.password_field :password_confirmation, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.submit "Sign Up", style: "padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;" %>
+    </div>
+  <% end %>
+  
+  <p style="margin-top: 20px;">
+    Already have an account? <%= link_to "Log in", login_path %>
+  </p>
+</div>
