@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  get "volunteers/new"
+  get "volunteers/create"
+  get "volunteers/show"
+  get "volunteers/edit"
+  get "volunteers/update"
+  get "volunteers/destroy"
+  get "sessions/new"
+  get "sessions/create"
+  get "sessions/destroy"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -11,4 +20,21 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  # Root route
+  root "sessions#new"
+
+  # Session routes (login/logout)
+  get    "/login",   to: "sessions#new"
+  post   "/login",   to: "sessions#create"
+  delete "/logout",  to: "sessions#destroy"
+
+  # Volunteer registration and profile
+  get    "/signup",  to: "volunteers#new"
+  post   "/signup",  to: "volunteers#create"
+
+  # Volunteer resources
+  resources :volunteers, except: [ :new, :create ]
+
+  # Admin routes (placeholder for Person 3)
+  # get "/admin", to: "admin#dashboard"
 end
