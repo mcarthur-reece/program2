@@ -35,6 +35,8 @@ Rails.application.routes.draw do
   # Volunteer resources
   resources :volunteers, except: [ :new, :create ]
 
+  #events
+  resources :events
   # Admin routes (placeholder for Person 3)
   # get "/admin", to: "admin#dashboard"
 end
