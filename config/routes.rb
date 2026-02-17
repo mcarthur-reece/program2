@@ -37,6 +37,10 @@ Rails.application.routes.draw do
 
   #events
   resources :events
+
+  # Volunteer signs up for an event (creates VolunteerAssignment)
+  post "/events/:id/signup", to: "volunteers#signup_for_event", as: :signup_event
+
   # Admin routes (placeholder for Person 3)
   # get "/admin", to: "admin#dashboard"
 end

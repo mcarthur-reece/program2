@@ -1,6 +1,6 @@
 class VolunteersController < ApplicationController
-  before_action :require_volunteer_login, only: [ :show, :edit, :update, :destroy ]
-  before_action :require_correct_volunteer, only: [ :show, :edit, :update, :destroy ]
+  before_action :require_volunteer_login, only: [:show, :edit, :update, :destroy, :signup_for_event]
+  before_action :require_correct_volunteer, only: [:show, :edit, :update, :destroy]
 
   # GET /signup
   def new
@@ -19,6 +19,25 @@ class VolunteersController < ApplicationController
       flash.now[:alert] = "There was an error creating your account."
       render :new, status: :unprocessable_entity
     end
+  end
+
+  # POST /events/:id/signup
+  def signup_for_event
+    event = Event.find(params[:id])
+
+    assignment = VolunteerAssignment.new(
+      volunteer: current_user,
+      event: event,
+      status: :pending
+    )
+
+    if assignment.save
+      flash[:success] = "Signed up! Your request is pending admin approval."
+    else
+      flash[:alert] = assignment.errors.full_messages.to_sentence
+    end
+
+    redirect_to event_path(event), status: :see_other
   end
 
   # GET /volunteers/:id

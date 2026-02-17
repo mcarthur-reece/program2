@@ -9,6 +9,18 @@
 <p><strong>Approved Volunteers:</strong> <%= @event.volunteer_assignments.approved.count %></p>
 <p><strong>Status:</strong> <%= @event.status %></p>
 
+<% if current_user %>
+  <% existing = @event.volunteer_assignments.find_by(volunteer_id: current_user.id) %>
+
+  <% if existing.present? %>
+    <p><strong>Your signup status:</strong> <%= existing.status %></p>
+  <% elsif @event.open? %>
+    <%= button_to "Sign up for this event", signup_event_path(@event), method: :post %>
+  <% else %>
+    <p>This event is not available for sign-ups.</p>
+  <% end %>
+<% end %>
+
 <p>
   <%= link_to "Back to Events", events_path %>
   <% if admin_logged_in? %>

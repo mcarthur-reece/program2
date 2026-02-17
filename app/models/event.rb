@@ -21,6 +21,14 @@ class Event < ApplicationRecord
     ((end_time - start_time) / 3600.0)
   end
 
+  def approved_volunteer_count
+    volunteer_assignments.approved.count
+  end
+
+  def slots_available?
+    open? && approved_volunteer_count < required_number_of_volunteers.to_i
+  end
+
   private
 
   def start_time_must_be_before_end_time

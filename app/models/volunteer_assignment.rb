@@ -12,6 +12,7 @@ class VolunteerAssignment < ApplicationRecord
             allow_nil: true
 
   validate :event_must_be_open_for_signup, on: :create
+  validate :event_must_have_available_slots, on: :create
   validate :hours_can_only_be_logged_for_completed_assignment
   validate :cannot_complete_assignment_unless_event_completed
   validate :hours_cannot_exceed_event_duration
@@ -23,6 +24,11 @@ class VolunteerAssignment < ApplicationRecord
   def event_must_be_open_for_signup
     return if event.blank?
     errors.add(:event, "is not open for sign-ups") unless event.open?
+  end
+
+  def event_must_have_available_slots
+    return if event.blank?
+    errors.add(:event, "is full") unless event.slots_available?
   end
 
   def hours_can_only_be_logged_for_completed_assignment
