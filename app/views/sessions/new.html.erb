@@ -1,0 +1,23 @@
+<div style="max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+  <h1>Login</h1>
+  
+  <%= form_with(url: login_path, scope: :session, local: true) do |f| %>
+    <div style="margin-bottom: 15px;">
+      <%= f.label :username, "Username:" %>
+      <%= f.text_field :username, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.label :password, "Password:" %>
+      <%= f.password_field :password, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+      <%= f.submit "Log In", style: "padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;" %>
+    </div>
+  <% end %>
+  
+  <p style="margin-top: 20px;">
+    Don't have an account? <%= link_to "Sign up as a volunteer", signup_path %>
+  </p>
+</div>

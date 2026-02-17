@@ -14,8 +14,8 @@ class Volunteer < ApplicationRecord
   validate :password_must_not_be_whitespace
   
   # Future associations (Person 2 will add these)
-  # has_many :volunteer_assignments, dependent: :destroy
-  # has_many :events, through: :volunteer_assignments
+  has_many :volunteer_assignments, dependent: :destroy
+  has_many :events, through: :volunteer_assignments
   
   private
   

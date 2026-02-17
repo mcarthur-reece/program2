@@ -1,0 +1,38 @@
+<h1>Events</h1>
+
+<% if admin_logged_in? %>
+  <p><%= link_to "New Event", new_event_path %></p>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Date</th>
+      <th>Location</th>
+      <th>Required</th>
+      <th>Approved</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @events.each do |event| %>
+      <tr>
+        <td><%= link_to event.title, event_path(event) %></td>
+        <td><%= event.event_date %></td>
+        <td><%= event.location %></td>
+        <td><%= event.required_number_of_volunteers %></td>
+        <td><%= event.volunteer_assignments.approved.count %></td>
+        <td><%= event.status %></td>
+        <td>
+          <% if admin_logged_in? %>
+            <%= link_to "Edit", edit_event_path(event) %> |
+            <%= link_to "Delete", event_path(event), data: { turbo_method: :delete, turbo_confirm: "Delete this event?" } %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
