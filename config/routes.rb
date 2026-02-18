@@ -43,4 +43,10 @@ Rails.application.routes.draw do
 
   # Admin routes (placeholder for Person 3)
   # get "/admin", to: "admin#dashboard"
+  get "/admin", to: "admins#dashboard", as: :admin
+
+  # editing profile 
+  get  "/admin/profile/edit", to: "admins#edit_profile",   as: :edit_admin_profile
+  patch "/admin/profile",     to: "admins#update_profile", as: :admin_profile
+
 end

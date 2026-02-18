@@ -1,0 +1,38 @@
+<h1>Edit Admin Profile</h1>
+
+<%= form_with model: @admin, url: admin_profile_path, method: :patch do |f| %>
+  <% if @admin.errors.any? %>
+    <div style="padding:10px; border:1px solid #fca5a5; background:#fee2e2; margin-bottom:12px;">
+      <strong><%= pluralize(@admin.errors.count, "error") %> prevented saving:</strong>
+      <ul>
+        <% @admin.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :username %><br>
+    <%= f.text_field :username, disabled: true %>
+    <small>(username cannot be changed)</small>
+  </div>
+  <br>
+
+  <div>
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+  <br>
+
+  <div>
+    <%= f.label :email %><br>
+    <%= f.email_field :email %>
+  </div>
+  <br>
+
+  <%= f.submit "Save Changes" %>
+<% end %>
+
+<br>
+<%= link_to "Back to Dashboard", admin_path %>

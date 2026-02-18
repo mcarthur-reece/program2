@@ -28,7 +28,7 @@ class SessionsController < ApplicationController
     if admin && admin.authenticate(password)
       session[:admin_id] = admin.id
       flash[:success] = "Welcome back, #{admin.name}!"
-      redirect_to root_path # Person 3 will change this to admin dashboard
+      redirect_to admin_path # Person 3 will change this to admin dashboard
       return
     end
 
