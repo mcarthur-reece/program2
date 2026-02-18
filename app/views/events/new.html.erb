@@ -1,9 +1,9 @@
-<%= form_with model: event do |f| %>
-  <% if event.errors.any? %>
+<%= form_with model: @event do |f| %>
+  <% if @event.errors.any? %>
     <div>
-      <h2><%= pluralize(event.errors.count, "error") %> prevented saving:</h2>
+      <h2><%= pluralize(@event.errors.count, "error") %> prevented saving:</h2>
       <ul>
-        <% event.errors.full_messages.each do |msg| %>
+        <% @event.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
         <% end %>
       </ul>
