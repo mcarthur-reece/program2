@@ -1,0 +1,39 @@
+<h1>My Events</h1>
+
+<% if @assignments.empty? %>
+  <p>You have not signed up for any events yet.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Hours Worked</th>
+        <th>Date Logged</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @assignments.each do |a| %>
+        <tr>
+          <td><%= link_to a.event.title, event_path(a.event) %></td>
+          <td><%= a.event.event_date %></td>
+          <td><%= a.status %></td>
+          <td><%= a.hours_worked || "-" %></td>
+          <td><%= a.date_logged || "-" %></td>
+          <td>
+            <% if a.pending? || a.approved? %>
+              <%= link_to "Withdraw",
+                          volunteer_assignment_path(a),
+                          data: { turbo_method: :delete, turbo_confirm: "Withdraw from this event?" } %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
