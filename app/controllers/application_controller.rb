@@ -2,6 +2,9 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
+  # Disable CSRF protection in test environment
+  protect_from_forgery with: :exception unless Rails.env.test?
+
   helper_method :current_user, :current_admin, :logged_in?, :admin_logged_in?
 
   private
