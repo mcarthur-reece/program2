@@ -5,11 +5,14 @@ require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
+# Near the top of the file, after require 'rspec/rails'
+Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
+
 
 # Checks for pending migrations and applies them before tests are run.
 begin
@@ -39,4 +42,21 @@ RSpec.configure do |config|
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
+
+  config.fixture_paths = [ Rails.root.join('spec/fixtures') ]
+  config.use_transactional_fixtures = true
+  config.include FactoryBot::Syntax::Methods
+  config.infer_spec_type_from_file_location!
+  config.filter_rails_from_backtrace!
+
+  # Add this block to disable CSRF for request specs
+  config.before(:each, type: :request) do
+    # Disable CSRF token verification in tests
+    ActionController::Base.allow_forgery_protection = false
+  end
+
+  config.after(:each, type: :request) do
+    # Re-enable it after tests (good practice)
+    ActionController::Base.allow_forgery_protection = true
+  end
 end

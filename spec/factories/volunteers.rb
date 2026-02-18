@@ -9,5 +9,13 @@ FactoryBot.define do
     address { "123 Main St, City, State 12345" }
     skills_interests { "Community service, teaching, organizing events" }
     total_hours { 0.0 }
+
+    # Trait for creating without associations (useful later)
+    trait :with_password do
+      after(:build) do |volunteer|
+        volunteer.password = "password123"
+        volunteer.password_confirmation = "password123"
+      end
+    end
   end
 end

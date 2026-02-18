@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
     if current_user
       redirect_to volunteer_path(current_user)
     elsif current_admin
-      redirect_to admin_path # Will be created by Person 3
+      redirect_to root_path  # Changed from admin_path since it doesn't exist yet
     end
   end
 
