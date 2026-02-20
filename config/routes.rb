@@ -25,16 +25,29 @@ Rails.application.routes.draw do
   # Existing signup route (works)
   post "/events/:id/signup", to: "volunteers#signup_for_event", as: :signup_event
 
-  # Admin routes (placeholder for Person 3)
+  # Admin routes (placeholder for Person 3)--------------------------------
   # get "/admin", to: "admin#dashboard"
   get "/admin", to: "admins#dashboard", as: :admin
 
   # editing profile 
   get  "/admin/profile/edit", to: "admins#edit_profile",   as: :edit_admin_profile
   patch "/admin/profile",     to: "admins#update_profile", as: :admin_profile
+  #admin volunteer and event routes 
+  namespace :admin_area do
+    resources :volunteers
+    resources :events
+    resources :volunteer_assignments, only: [:index, :destroy] do
+      member do
+        patch :approve
+        patch :reject
+        patch :mark_completed
+        patch :log_hours
+      end
+    end 
+  end
+
 
   # Add these for "My Events" + Withdraw (Person 2)
   resources :volunteer_assignments, only: [:index, :destroy]
 
-  get "/admin", to: "admin#dashboard", as: :admin
 end

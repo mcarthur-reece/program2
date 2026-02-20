@@ -1,0 +1,54 @@
+<%= form_with model: [:admin_area, event] do |f| %>
+  <% if event.errors.any? %>
+    <div style="padding:10px; border:1px solid #fca5a5; background:#fee2e2; margin-bottom:12px;">
+      <strong><%= pluralize(event.errors.count, "error") %> prevented saving:</strong>
+      <ul>
+        <% event.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :title %><br>
+    <%= f.text_field :title %>
+  </div><br>
+
+  <div>
+    <%= f.label :description %><br>
+    <%= f.text_area :description %>
+  </div><br>
+
+  <div>
+    <%= f.label :location %><br>
+    <%= f.text_field :location %>
+  </div><br>
+
+  <div>
+    <%= f.label :event_date %><br>
+    <%= f.date_field :event_date %>
+  </div><br>
+
+  <div>
+    <%= f.label :start_time %><br>
+    <%= f.time_field :start_time %>
+  </div><br>
+
+  <div>
+    <%= f.label :end_time %><br>
+    <%= f.time_field :end_time %>
+  </div><br>
+
+  <div>
+    <%= f.label :required_number_of_volunteers %><br>
+    <%= f.number_field :required_number_of_volunteers, min: 1 %>
+  </div><br>
+
+  <div>
+    <%= f.label :status %><br>
+    <%= f.select :status, Event.statuses.keys.map { |s| [s.titleize, s] } %>
+  </div><br>
+
+  <%= f.submit %>
+<% end %>

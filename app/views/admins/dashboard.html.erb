@@ -51,9 +51,9 @@
       <h2>Quick Actions</h2>
       <div class="panel__actions">
         <%= link_to "Edit Admin Profile", edit_admin_profile_path, class: "btn btn--soft" %>
-        <%= link_to "Manage Volunteers", volunteers_path, class: "btn" %>
-        <%= link_to "Manage Events", events_path, class: "btn" %>
-        <%= link_to "View Events List", events_path, class: "btn btn--soft" %>
+        <%= link_to "Manage Volunteers", admin_area_volunteers_path, class: "btn" %>
+        <%= link_to "Manage Events", admin_area_events_path, class: "btn" %>
+        <%= link_to "Manage Assignments / Approvals", admin_area_volunteer_assignments_path, class: "btn btn--soft" %>
       </div>
       <p class="hint">
       </p>
