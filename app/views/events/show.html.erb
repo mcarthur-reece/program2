@@ -14,6 +14,13 @@
 
   <% if existing.present? %>
     <p><strong>Your signup status:</strong> <%= existing.status %></p>
+
+    <% if existing.pending? || existing.approved? %>
+      <%= button_to "Withdraw from this event",
+                    volunteer_assignment_path(existing),
+                    method: :delete,
+                    data: { turbo_confirm: "Withdraw from this event?" } %>
+    <% end %>
   <% elsif @event.open? %>
     <%= button_to "Sign up for this event", signup_event_path(@event), method: :post %>
   <% else %>
