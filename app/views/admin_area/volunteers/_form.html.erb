@@ -1,0 +1,58 @@
+<%= form_with model: [:admin_area, volunteer] do |f| %>
+  <% if volunteer.errors.any? %>
+    <div style="padding:10px; border:1px solid #fca5a5; background:#fee2e2; margin-bottom:12px;">
+      <strong><%= pluralize(volunteer.errors.count, "error") %> prevented saving:</strong>
+      <ul>
+        <% volunteer.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :username %><br>
+    <%= f.text_field :username, disabled: true %>
+  </div><br>
+
+  <div>
+    <%= f.label :full_name %><br>
+    <%= f.text_field :full_name %>
+  </div><br>
+
+  <div>
+    <%= f.label :email %><br>
+    <%= f.email_field :email %>
+  </div><br>
+
+  <div>
+    <%= f.label :phone_number %><br>
+    <%= f.text_field :phone_number %>
+  </div><br>
+
+  <div>
+    <%= f.label :address %><br>
+    <%= f.text_field :address %>
+  </div><br>
+
+  <div>
+    <%= f.label :skills_interests, "Skills / Interests" %><br>
+    <%= f.text_area :skills_interests %>
+  </div><br>
+
+  <hr>
+
+  <p><strong>Password</strong> (leave blank on edit to keep unchanged)</p>
+
+  <div>
+    <%= f.label :password %><br>
+    <%= f.password_field :password %>
+  </div><br>
+
+  <div>
+    <%= f.label :password_confirmation %><br>
+    <%= f.password_field :password_confirmation %>
+  </div><br>
+
+  <%= f.submit %>
+<% end %>

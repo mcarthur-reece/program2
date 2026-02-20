@@ -1,0 +1,138 @@
+<h1>Manage Assignments / Approvals</h1>
+
+<p>
+  <%= link_to "Back to Dashboard", admin_path %> |
+  <%= link_to "Manage Events", admin_area_events_path %>
+</p>
+
+<hr>
+
+<h2>Pending Sign-ups</h2>
+<table border="1" cellpadding="6">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Volunteer</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @pending.each do |a| %>
+      <tr>
+        <td>
+          <strong><%= a.event.title %></strong><br>
+          <%= a.event.event_date %> • <%= a.event.status %> • <%= a.event.approved_volunteer_count %>/<%= a.event.required_number_of_volunteers %>
+        </td>
+        <td><%= a.volunteer.full_name %> (<%= a.volunteer.username %>)</td>
+        <td><%= a.status %></td>
+        <td>
+          <%= button_to "Approve", approve_admin_area_volunteer_assignment_path(a), method: :patch %>
+          <%= button_to "Reject", reject_admin_area_volunteer_assignment_path(a), method: :patch,
+                data: { turbo_confirm: "Reject this sign-up?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Approved Assignments</h2>
+<table border="1" cellpadding="6">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Volunteer</th>
+      <th>Event Status</th>
+      <th>Assignment Status</th>
+      <th>Complete</th>
+      <th>Log Hours</th>
+      <th>Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @approved.each do |a| %>
+      <tr>
+        <td><strong><%= a.event.title %></strong> (<%= a.event.event_date %>)</td>
+        <td><%= a.volunteer.full_name %></td>
+        <td><%= a.event.status %></td>
+        <td><%= a.status %></td>
+
+        <td>
+          <% if a.event.completed? %>
+            <%= button_to "Mark Completed", mark_completed_admin_area_volunteer_assignment_path(a), method: :patch %>
+          <% else %>
+            (event not completed)
+          <% end %>
+        </td>
+
+        <td>(complete first)</td>
+
+        <td>
+          <%= button_to "Remove", admin_area_volunteer_assignment_path(a), method: :delete,
+                data: { turbo_confirm: "Remove this assignment?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Completed Assignments (Log Hours)</h2>
+<table border="1" cellpadding="6">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Volunteer</th>
+      <th>Hours Worked</th>
+      <th>Date Logged</th>
+      <th>Update Hours</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @completed.each do |a| %>
+      <tr>
+        <td><strong><%= a.event.title %></strong> (<%= a.event.event_date %>)</td>
+        <td><%= a.volunteer.full_name %></td>
+        <td><%= a.hours_worked %></td>
+        <td><%= a.date_logged %></td>
+        <td>
+          <%= form_with model: [:admin_area, a], url: log_hours_admin_area_volunteer_assignment_path(a), method: :patch do |f| %>
+            <%= f.number_field :hours_worked, step: 0.25, min: 0 %>
+            <%= f.date_field :date_logged %>
+            <%= f.submit "Save" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>Cancelled Assignments</h2>
+<table border="1" cellpadding="6">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Volunteer</th>
+      <th>Status</th>
+      <th>Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @cancelled.each do |a| %>
+      <tr>
+        <td><%= a.event.title %> (<%= a.event.event_date %>)</td>
+        <td><%= a.volunteer.full_name %></td>
+        <td><%= a.status %></td>
+        <td>
+          <%= button_to "Remove", admin_area_volunteer_assignment_path(a), method: :delete,
+                data: { turbo_confirm: "Permanently delete this record?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

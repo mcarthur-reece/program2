@@ -1,0 +1,19 @@
+<h1>Volunteer #<%= @volunteer.id %></h1>
+
+<p><strong>Username:</strong> <%= @volunteer.username %></p>
+<p><strong>Full Name:</strong> <%= @volunteer.full_name %></p>
+<p><strong>Email:</strong> <%= @volunteer.email %></p>
+<p><strong>Phone Number:</strong> <%= @volunteer.phone_number %></p>
+<p><strong>Address:</strong> <%= @volunteer.address %></p>
+<p><strong>Skills / Interests:</strong> <%= @volunteer.skills_interests %></p>
+
+<p>
+  <%= link_to "Edit", edit_admin_area_volunteer_path(@volunteer) %> |
+  <%= link_to "Back to list", admin_area_volunteers_path %>
+</p>
+
+<p>
+  <%= button_to "Delete", admin_area_volunteer_path(@volunteer),
+        method: :delete,
+        data: { turbo_confirm: "Delete this volunteer?" } %>
+</p>

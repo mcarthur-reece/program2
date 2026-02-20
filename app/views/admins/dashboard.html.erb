@@ -1,0 +1,89 @@
+<div class="dash">
+  <header class="dash__header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p class="sub">
+        Welcome back, <strong><%= current_admin.name %></strong>. Manage volunteers, events, and approvals from here.
+      </p>
+    </div>
+
+    <div class="dash__actions">
+      <%= button_to "Logout", logout_path, method: :delete, class: "btn btn--ghost" %>
+    </div>
+  </header>
+
+  <section class="dash__cards">
+    <div class="card">
+      <div class="card__icon">👥</div>
+      <div class="card__body">
+        <div class="card__label">Total Volunteers</div>
+        <div class="card__value"><%= @volunteer_count %></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__icon">📅</div>
+      <div class="card__body">
+        <div class="card__label">Total Events</div>
+        <div class="card__value"><%= @event_count %></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__icon">⏳</div>
+      <div class="card__body">
+        <div class="card__label">Pending Sign-ups</div>
+        <div class="card__value"><%= @pending_assignments %></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__icon">✅</div>
+      <div class="card__body">
+        <div class="card__label">Approved Assignments</div>
+        <div class="card__value"><%= @approved_assignments %></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dash__grid">
+    <div class="panel">
+      <h2>Quick Actions</h2>
+      <div class="panel__actions">
+        <%= link_to "Edit Admin Profile", edit_admin_profile_path, class: "btn btn--soft" %>
+        <%= link_to "Manage Volunteers", admin_area_volunteers_path, class: "btn" %>
+        <%= link_to "Manage Events", admin_area_events_path, class: "btn" %>
+        <%= link_to "Manage Assignments / Approvals", admin_area_volunteer_assignments_path, class: "btn btn--soft" %>
+      </div>
+      <p class="hint">
+      </p>
+    </div>
+
+    <div class="panel panel--hero">
+      <div class="hero">
+        <div class="hero__badge">Volunteer Management System</div>
+        <h2>Keep everything organized</h2>
+        <p>
+          Review sign-ups, assign volunteers, and log hours — all from a single place.
+        </p>
+
+        <!-- “Cool pic” without external files: a simple inline SVG illustration -->
+        <div class="hero__art" aria-hidden="true">
+          <svg viewBox="0 0 420 160" role="img">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1">
+                <stop offset="0" stop-color="#4f46e5"/>
+                <stop offset="1" stop-color="#06b6d4"/>
+              </linearGradient>
+            </defs>
+            <rect x="10" y="20" width="400" height="120" rx="18" fill="url(#g)" opacity="0.14"/>
+            <circle cx="85" cy="80" r="28" fill="url(#g)" opacity="0.35"/>
+            <rect x="140" y="52" width="230" height="16" rx="8" fill="url(#g)" opacity="0.35"/>
+            <rect x="140" y="78" width="180" height="14" rx="7" fill="url(#g)" opacity="0.28"/>
+            <rect x="140" y="102" width="210" height="14" rx="7" fill="url(#g)" opacity="0.22"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
