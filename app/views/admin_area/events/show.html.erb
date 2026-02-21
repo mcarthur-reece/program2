@@ -1,15 +1,106 @@
-<h1>Event #<%= @event.id %></h1>
+<div style="max-width: 900px; margin: 50px auto; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  
+  <!-- Header Section -->
+  <div style="border-bottom: 2px solid #dee2e6; padding-bottom: 20px; margin-bottom: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: start;">
+      <div style="flex: 1;">
+        <h1 style="margin: 0 0 10px 0; color: #343a40; font-size: 32px;"><%= @event.title %></h1>
+        <div style="color: #6c757d; font-size: 14px;">Event #<%= @event.id %></div>
+      </div>
+      
+      <% status_colors = {
+        'open' => '#28a745',
+        'full' => '#ffc107',
+        'completed' => '#007bff',
+        'cancelled' => '#dc3545'
+      } %>
+      <span style="padding: 8px 16px; border-radius: 20px; background-color: <%= status_colors[@event.status] || '#6c757d' %>; color: white; font-size: 14px; font-weight: bold; text-transform: uppercase;">
+        <%= @event.status %>
+      </span>
+    </div>
+  </div>
 
-<p><strong>Title:</strong> <%= @event.title %></p>
-<p><strong>Description:</strong> <%= @event.description %></p>
-<p><strong>Location:</strong> <%= @event.location %></p>
-<p><strong>Date:</strong> <%= @event.event_date %></p>
-<p><strong>Time:</strong> <%= @event.start_time&.strftime("%H:%M") %> - <%= @event.end_time&.strftime("%H:%M") %></p>
-<p><strong>Status:</strong> <%= @event.status %></p>
-<p><strong>Required volunteers:</strong> <%= @event.required_number_of_volunteers %></p>
-<p><strong>Approved volunteers:</strong> <%= @event.approved_volunteer_count %></p>
+  <!-- Event Details Grid -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px;">
+    
+    <!-- Date & Time Card -->
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+      <h3 style="margin: 0 0 15px 0; color: #495057; font-size: 16px; font-weight: bold;">📅 Date & Time</h3>
+      <p style="margin: 0 0 8px 0; color: #495057;">
+        <strong>Date:</strong> <%= @event.event_date&.strftime('%A, %B %d, %Y') || 'Not set' %>
+      </p>
+      <p style="margin: 0; color: #495057;">
+        <strong>Time:</strong> <%= @event.start_time&.strftime("%I:%M %p") %> - <%= @event.end_time&.strftime("%I:%M %p") %>
+      </p>
+    </div>
 
-<p>
-  <%= link_to "Edit", edit_admin_area_event_path(@event) %> |
-  <%= link_to "Back to list", admin_area_events_path %>
-</p>
+    <!-- Location Card -->
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745;">
+      <h3 style="margin: 0 0 15px 0; color: #495057; font-size: 16px; font-weight: bold;">📍 Location</h3>
+      <p style="margin: 0; color: #495057;">
+        <%= @event.location %>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Description Section -->
+  <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #6c757d;">
+    <h3 style="margin: 0 0 15px 0; color: #495057; font-size: 16px; font-weight: bold;">📝 Description</h3>
+    <p style="margin: 0; color: #495057; line-height: 1.6;">
+      <%= @event.description || 'No description provided.' %>
+    </p>
+  </div>
+
+  <!-- Volunteer Stats -->
+  <div style="background-color: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #ffc107;">
+    <h3 style="margin: 0 0 15px 0; color: #856404; font-size: 16px; font-weight: bold;">👥 Volunteer Information</h3>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <p style="margin: 0 0 8px 0; color: #856404;">
+          <strong>Required Volunteers:</strong> <%= @event.required_number_of_volunteers %>
+        </p>
+        <p style="margin: 0; color: #856404;">
+          <strong>Approved Volunteers:</strong> 
+          <% approved = @event.approved_volunteer_count %>
+          <% required = @event.required_number_of_volunteers %>
+          <% percentage = required > 0 ? (approved.to_f / required * 100).round : 0 %>
+          <span style="font-weight: bold; color: <%= percentage >= 100 ? '#28a745' : percentage >= 50 ? '#856404' : '#dc3545' %>;">
+            <%= approved %>
+          </span>
+        </p>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div style="flex: 1; max-width: 300px; margin-left: 20px;">
+        <div style="background-color: #f0f0f0; border-radius: 10px; height: 20px; overflow: hidden;">
+          <div style="background-color: <%= percentage >= 100 ? '#28a745' : percentage >= 50 ? '#ffc107' : '#dc3545' %>; height: 100%; width: <%= [percentage, 100].min %>%; transition: width 0.3s ease;"></div>
+        </div>
+        <p style="text-align: center; margin: 5px 0 0 0; font-size: 12px; color: #856404;">
+          <%= percentage %>% filled
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div style="display: flex; gap: 10px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+    <%= link_to "✏️ Edit Event", edit_admin_area_event_path(@event), 
+        style: "flex: 1; padding: 12px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; text-align: center; font-weight: bold; font-size: 16px;" %>
+    
+    <%= link_to "👥 View Assignments", admin_area_volunteer_assignments_path(event_id: @event.id), 
+        style: "flex: 1; padding: 12px 20px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px; text-align: center; font-weight: bold; font-size: 16px;" %>
+    
+    <%= button_to "🗑️ Delete Event", admin_area_event_path(@event),
+        method: :delete,
+        data: { turbo_confirm: "Are you sure? This will delete all volunteer assignments for this event." },
+        style: "flex: 1; padding: 12px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;" %>
+  </div>
+
+  <div style="margin-top: 20px; text-align: center;">
+    <%= link_to "← Back to All Events", admin_area_events_path, 
+        style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; display: inline-block;" %>
+  </div>
+
+</div>
