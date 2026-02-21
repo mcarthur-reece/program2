@@ -21,43 +21,14 @@ class VolunteerAssignment < ApplicationRecord
 
   private
 
-  def event_must_be_open_for_signup
-    return if event.blank?
-    errors.add(:event, "is not open for sign-ups") unless event.open?
-  end
-
-  def event_must_have_available_slots
-    return if event.blank?
-    errors.add(:event, "is full") unless event.slots_available?
-  end
-
-  def hours_can_only_be_logged_for_completed_assignment
-    return if hours_worked.blank? && date_logged.blank?
-
-    errors.add(:hours_worked, "can only be logged for completed assignments") unless completed?
-    errors.add(:date_logged, "must be present when logging hours") if date_logged.blank?
-  end
-
-  def cannot_complete_assignment_unless_event_completed
-    return unless completed?
-    return if event.blank?
-
-    errors.add(:status, "cannot be completed unless the event is completed") unless event.completed?
-  end
-
-  def hours_cannot_exceed_event_duration
-    return if hours_worked.blank?
-    return if event.blank? || event.start_time.blank? || event.end_time.blank?
-
-    duration = event.duration_hours
-    return if duration.nil?
-
-    errors.add(:hours_worked, "cannot exceed the event duration (#{duration} hours)") if hours_worked.to_d > duration.to_d
-  end
+  # ... existing code ...
 
   def sync_event_fullness!
     return if event.blank?
-    return if event.completed?
+
+    # When an Event is being destroyed (and it destroys assignments),
+    # Rails may freeze the event instance. Never try to update it then.
+    return if event.destroyed? || event.frozen? || event.completed?
 
     approved_count = event.volunteer_assignments.approved.count
 
