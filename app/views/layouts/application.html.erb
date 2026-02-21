@@ -10,20 +10,49 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <!-- Flash Messages -->
-    <% if flash[:success] %>
-      <div style="background-color: #d4edda; color: #155724; padding: 15px; margin: 10px; border: 1px solid #c3e6cb; border-radius: 4px;">
-        <%= flash[:success] %>
+  <body style="margin: 0; padding: 0; background-color: #f1f3f5; font-family: sans-serif; min-height: 100vh;">
+
+    <%# Navbar %>
+    <nav style="background-color: #343a40; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+      <span style="color: white; font-size: 18px; font-weight: 700; letter-spacing: 0.3px;">
+        🤝 Volunteer Management
+      </span>
+      <div style="display: flex; gap: 8px;">
+        <%= link_to "Events", events_path,
+            style: "color: #adb5bd; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+        <% if admin_logged_in? %>
+          <%= link_to "Admin Dashboard", admin_path,
+              style: "color: #adb5bd; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+          <%= link_to "Log Out", logout_path, data: { turbo_method: :delete },
+              style: "color: #adb5bd; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+        <% elsif current_user %>
+          <%= link_to "My Dashboard", volunteer_path(current_user),
+              style: "color: #adb5bd; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+          <%= link_to "Log Out", logout_path, data: { turbo_method: :delete },
+              style: "color: #adb5bd; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+        <% else %>
+          <%= link_to "Log In", login_path,
+              style: "color: #adb5bd; text-decoration: none; padding: 6px 14px; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+        <% end %>
       </div>
-    <% end %>
-    
-    <% if flash[:alert] %>
-      <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin: 10px; border: 1px solid #f5c6cb; border-radius: 4px;">
-        <%= flash[:alert] %>
-      </div>
-    <% end %>
-    
+    </nav>
+
+    <%# Flash messages %>
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 20px;">
+      <% if flash[:success] %>
+        <div style="background-color: #d4edda; color: #155724; padding: 14px 18px; margin-top: 20px; border: 1px solid #c3e6cb; border-radius: 6px; font-size: 14px; font-weight: 500;">
+          ✅ <%= flash[:success] %>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div style="background-color: #f8d7da; color: #721c24; padding: 14px 18px; margin-top: 20px; border: 1px solid #f5c6cb; border-radius: 6px; font-size: 14px; font-weight: 500;">
+          ⚠️ <%= flash[:alert] %>
+        </div>
+      <% end %>
+    </div>
+
     <%= yield %>
+
   </body>
 </html>
