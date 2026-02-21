@@ -1,0 +1,41 @@
+<div style="max-width: 600px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 8px; background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  <h1>Assign Volunteer to Event</h1>
+  
+  <%= form_with(model: [:admin_area, @assignment], local: true) do |f| %>
+    <% if @assignment.errors.any? %>
+      <div style="color: #721c24; background-color: #f8d7da; margin-bottom: 20px; padding: 15px; border: 1px solid #f5c6cb; border-radius: 4px;">
+        <h3 style="margin-top: 0;"><%= pluralize(@assignment.errors.count, "error") %> prohibited this assignment:</h3>
+        <ul style="margin-bottom: 0;">
+          <% @assignment.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    
+    <div style="margin-bottom: 20px;">
+      <%= f.label :volunteer_id, "Select Volunteer:", style: "display: block; margin-bottom: 5px; font-weight: bold;" %>
+      <%= f.select :volunteer_id, 
+          options_from_collection_for_select(@volunteers, :id, :full_name), 
+          { prompt: 'Choose a volunteer...' },
+          { required: true, style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px;" } %>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+      <%= f.label :event_id, "Select Event:", style: "display: block; margin-bottom: 5px; font-weight: bold;" %>
+      <%= f.select :event_id, 
+          options_from_collection_for_select(@events, :id, :title), 
+          { prompt: 'Choose an event...' },
+          { required: true, style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px;" } %>
+    </div>
+    
+    <div style="background-color: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 4px; margin: 20px 0; border: 1px solid #bee5eb;">
+      <strong>Note:</strong> Admin-created assignments are automatically approved. Volunteers will be notified of their assignment.
+    </div>
+    
+    <div style="margin-top: 30px; display: flex; gap: 10px;">
+      <%= f.submit "Assign Volunteer", style: "flex: 1; padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;" %>
+      <%= link_to "Cancel", admin_area_volunteer_assignments_path, style: "flex: 1; padding: 12px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; text-align: center; font-size: 16px; font-weight: bold; display: block;" %>
+    </div>
+  <% end %>
+</div>

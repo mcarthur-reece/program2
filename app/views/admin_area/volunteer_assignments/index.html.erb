@@ -1,138 +1,77 @@
-<h1>Manage Assignments / Approvals</h1>
-
-<p>
-  <%= link_to "Back to Dashboard", admin_path %> |
-  <%= link_to "Manage Events", admin_area_events_path %>
-</p>
-
-<hr>
-
-<h2>Pending Sign-ups</h2>
-<table border="1" cellpadding="6">
-  <thead>
-    <tr>
-      <th>Event</th>
-      <th>Volunteer</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @pending.each do |a| %>
-      <tr>
-        <td>
-          <strong><%= a.event.title %></strong><br>
-          <%= a.event.event_date %> • <%= a.event.status %> • <%= a.event.approved_volunteer_count %>/<%= a.event.required_number_of_volunteers %>
-        </td>
-        <td><%= a.volunteer.full_name %> (<%= a.volunteer.username %>)</td>
-        <td><%= a.status %></td>
-        <td>
-          <%= button_to "Approve", approve_admin_area_volunteer_assignment_path(a), method: :patch %>
-          <%= button_to "Reject", reject_admin_area_volunteer_assignment_path(a), method: :patch,
-                data: { turbo_confirm: "Reject this sign-up?" } %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<hr>
-
-<h2>Approved Assignments</h2>
-<table border="1" cellpadding="6">
-  <thead>
-    <tr>
-      <th>Event</th>
-      <th>Volunteer</th>
-      <th>Event Status</th>
-      <th>Assignment Status</th>
-      <th>Complete</th>
-      <th>Log Hours</th>
-      <th>Remove</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @approved.each do |a| %>
-      <tr>
-        <td><strong><%= a.event.title %></strong> (<%= a.event.event_date %>)</td>
-        <td><%= a.volunteer.full_name %></td>
-        <td><%= a.event.status %></td>
-        <td><%= a.status %></td>
-
-        <td>
-          <% if a.event.completed? %>
-            <%= button_to "Mark Completed", mark_completed_admin_area_volunteer_assignment_path(a), method: :patch %>
-          <% else %>
-            (event not completed)
-          <% end %>
-        </td>
-
-        <td>(complete first)</td>
-
-        <td>
-          <%= button_to "Remove", admin_area_volunteer_assignment_path(a), method: :delete,
-                data: { turbo_confirm: "Remove this assignment?" } %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<hr>
-
-<h2>Completed Assignments (Log Hours)</h2>
-<table border="1" cellpadding="6">
-  <thead>
-    <tr>
-      <th>Event</th>
-      <th>Volunteer</th>
-      <th>Hours Worked</th>
-      <th>Date Logged</th>
-      <th>Update Hours</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @completed.each do |a| %>
-      <tr>
-        <td><strong><%= a.event.title %></strong> (<%= a.event.event_date %>)</td>
-        <td><%= a.volunteer.full_name %></td>
-        <td><%= a.hours_worked %></td>
-        <td><%= a.date_logged %></td>
-        <td>
-          <%= form_with model: [:admin_area, a], url: log_hours_admin_area_volunteer_assignment_path(a), method: :patch do |f| %>
-            <%= f.number_field :hours_worked, step: 0.25, min: 0 %>
-            <%= f.date_field :date_logged %>
-            <%= f.submit "Save" %>
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<hr>
-
-<h2>Cancelled Assignments</h2>
-<table border="1" cellpadding="6">
-  <thead>
-    <tr>
-      <th>Event</th>
-      <th>Volunteer</th>
-      <th>Status</th>
-      <th>Remove</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @cancelled.each do |a| %>
-      <tr>
-        <td><%= a.event.title %> (<%= a.event.event_date %>)</td>
-        <td><%= a.volunteer.full_name %></td>
-        <td><%= a.status %></td>
-        <td>
-          <%= button_to "Remove", admin_area_volunteer_assignment_path(a), method: :delete,
-                data: { turbo_confirm: "Permanently delete this record?" } %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<div style="max-width: 1400px; margin: 50px auto; padding: 20px;">
+  <h1>Manage Volunteer Assignments</h1>
+  
+  <div style="margin: 20px 0; display: flex; justify-content: space-between; align-items: center;">
+    <%= link_to "➕ Create New Assignment", new_admin_area_volunteer_assignment_path, style: "padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px;" %>
+    
+    <div>
+      <%= link_to "All", admin_area_volunteer_assignments_path, style: "padding: 8px 15px; margin: 0 5px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+      <%= link_to "Pending", admin_area_volunteer_assignments_path(status: 'pending'), style: "padding: 8px 15px; margin: 0 5px; background-color: #ffc107; color: white; text-decoration: none; border-radius: 4px;" %>
+      <%= link_to "Approved", admin_area_volunteer_assignments_path(status: 'approved'), style: "padding: 8px 15px; margin: 0 5px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px;" %>
+      <%= link_to "Completed", admin_area_volunteer_assignments_path(status: 'completed'), style: "padding: 8px 15px; margin: 0 5px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;" %>
+    </div>
+  </div>
+  
+  <% if @assignments.empty? %>
+    <p style="text-align: center; padding: 40px; background-color: #f8f9fa; border-radius: 8px;">
+      No assignments found. <%= link_to "Create one", new_admin_area_volunteer_assignment_path %>
+    </p>
+  <% else %>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <thead>
+        <tr style="background-color: #343a40; color: white;">
+          <th style="padding: 12px; text-align: left;">Volunteer</th>
+          <th style="padding: 12px; text-align: left;">Event</th>
+          <th style="padding: 12px; text-align: left;">Status</th>
+          <th style="padding: 12px; text-align: left;">Hours Worked</th>
+          <th style="padding: 12px; text-align: left;">Date Logged</th>
+          <th style="padding: 12px; text-align: center; width: 250px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @assignments.each do |assignment| %>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;"><%= assignment.volunteer.full_name %></td>
+            <td style="padding: 12px;"><%= assignment.event.title %></td>
+            <td style="padding: 12px;">
+              <% status_colors = {
+                'pending' => '#ffc107',
+                'approved' => '#28a745',
+                'completed' => '#007bff',
+                'cancelled' => '#dc3545'
+              } %>
+              <span style="padding: 4px 12px; border-radius: 12px; background-color: <%= status_colors[assignment.status] || '#6c757d' %>; color: white; font-size: 12px; font-weight: bold;">
+                <%= assignment.status.upcase %>
+              </span>
+            </td>
+            <td style="padding: 12px;"><%= assignment.hours_worked || '-' %></td>
+            <td style="padding: 12px;"><%= assignment.date_logged&.strftime('%m/%d/%Y') || '-' %></td>
+            <td style="padding: 12px; text-align: center;">
+              <% if assignment.status == 'pending' %>
+                <%= button_to "✓", approve_admin_area_volunteer_assignment_path(assignment), 
+                    method: :patch, 
+                    title: "Approve",
+                    style: "padding: 6px 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px; display: inline-block;" %>
+                <%= button_to "✗", reject_admin_area_volunteer_assignment_path(assignment), 
+                    method: :patch,
+                    title: "Reject",
+                    style: "padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px; display: inline-block;" %>
+              <% end %>
+              
+              <%= link_to "Edit", edit_admin_area_volunteer_assignment_path(assignment), style: "padding: 6px 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;" %>
+              
+              <%= button_to "Delete", admin_area_volunteer_assignment_path(assignment), 
+                  method: :delete, 
+                  data: { confirm: "Are you sure you want to remove this assignment?" },
+                  style: "padding: 6px 12px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px; display: inline-block; font-size: 14px;" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  
+  <div style="margin-top: 30px;">
+    <%= link_to "← Back to Dashboard", root_path, style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+  </div>
+</div>

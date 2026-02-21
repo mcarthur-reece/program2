@@ -1,93 +1,114 @@
-module AdminArea
-  class VolunteerAssignmentsController < ApplicationController
-    before_action :require_admin_login
-    before_action :set_assignment, only: [:approve, :reject, :mark_completed, :log_hours, :destroy]
+class AdminArea::VolunteerAssignmentsController < ApplicationController
+  before_action :require_admin_login
+  before_action :set_assignment, only: [ :show, :edit, :update, :destroy, :approve, :reject ]
 
-    def index
-      @pending   = VolunteerAssignment.includes(:volunteer, :event).pending.order(created_at: :desc)
-      @approved  = VolunteerAssignment.includes(:volunteer, :event).approved.order(created_at: :desc)
-      @completed = VolunteerAssignment.includes(:volunteer, :event).completed.order(created_at: :desc)
-      @cancelled = VolunteerAssignment.includes(:volunteer, :event).cancelled.order(created_at: :desc)
+  # GET /admin_area/volunteer_assignments
+  def index
+    @assignments = VolunteerAssignment.includes(:volunteer, :event).all
+
+    # Optional: Filter by status
+    if params[:status].present?
+      @assignments = @assignments.where(status: params[:status])
     end
 
-    # PATCH /admin_area/volunteer_assignments/:id/approve
-    def approve
-      event = @assignment.event
-
-      if event.completed?
-        redirect_back fallback_location: admin_area_volunteer_assignments_path,
-                      alert: "Cannot approve sign-ups for a completed event."
-        return
-      end
-
-      # prevent overfilling
-      if event.approved_volunteer_count >= event.required_number_of_volunteers.to_i
-        redirect_back fallback_location: admin_area_volunteer_assignments_path,
-                      alert: "Event is already full. Increase required volunteers or reject/cancel someone first."
-        return
-      end
-
-      if @assignment.update(status: :approved)
-        redirect_to admin_area_volunteer_assignments_path, notice: "Sign-up approved."
-      else
-        redirect_to admin_area_volunteer_assignments_path, alert: @assignment.errors.full_messages.to_sentence
-      end
+    # Optional: Filter by event
+    if params[:event_id].present?
+      @assignments = @assignments.where(event_id: params[:event_id])
     end
 
-    # PATCH /admin_area/volunteer_assignments/:id/reject
-    def reject
-      if @assignment.update(status: :cancelled)
-        redirect_to admin_area_volunteer_assignments_path, notice: "Sign-up rejected."
-      else
-        redirect_to admin_area_volunteer_assignments_path, alert: @assignment.errors.full_messages.to_sentence
-      end
+    @assignments = @assignments.order(created_at: :desc)
+  end
+
+  # GET /admin_area/volunteer_assignments/:id
+  def show
+  end
+
+  # GET /admin_area/volunteer_assignments/new
+  def new
+    @assignment = VolunteerAssignment.new
+    @volunteers = Volunteer.all.order(:full_name)
+    @events = Event.where(status: [ "open", "full" ]).order(:event_date)
+  end
+
+  # POST /admin_area/volunteer_assignments
+  def create
+    @assignment = VolunteerAssignment.new(assignment_params)
+    @assignment.status = "approved"  # Admin-created assignments are auto-approved
+
+    if @assignment.save
+      flash[:success] = "Volunteer successfully assigned to event."
+      redirect_to admin_area_volunteer_assignments_path
+    else
+      @volunteers = Volunteer.all.order(:full_name)
+      @events = Event.where(status: [ "open", "full" ]).order(:event_date)
+      flash.now[:alert] = "Failed to create assignment."
+      render :new, status: :unprocessable_entity
     end
+  end
 
-    # PATCH /admin_area/volunteer_assignments/:id/mark_completed
-    def mark_completed
-      unless @assignment.event.completed?
-        redirect_to admin_area_volunteer_assignments_path,
-                    alert: "Event must be marked completed before completing assignments."
-        return
-      end
+  # GET /admin_area/volunteer_assignments/:id/edit
+  def edit
+    @volunteers = Volunteer.all.order(:full_name)
+    @events = Event.all.order(:event_date)
+  end
 
-      if @assignment.update(status: :completed)
-        redirect_to admin_area_volunteer_assignments_path, notice: "Assignment marked completed."
-      else
-        redirect_to admin_area_volunteer_assignments_path, alert: @assignment.errors.full_messages.to_sentence
-      end
+  # PATCH/PUT /admin_area/volunteer_assignments/:id
+  def update
+    if @assignment.update(assignment_params)
+      flash[:success] = "Assignment updated successfully."
+      redirect_to admin_area_volunteer_assignments_path
+    else
+      @volunteers = Volunteer.all.order(:full_name)
+      @events = Event.all.order(:event_date)
+      flash.now[:alert] = "Failed to update assignment."
+      render :edit, status: :unprocessable_entity
     end
+  end
 
-    # PATCH /admin_area/volunteer_assignments/:id/log_hours
-    def log_hours
-      # Your model requires COMPLETED before hours/date can be set.
-      unless @assignment.completed?
-        redirect_to admin_area_volunteer_assignments_path,
-                    alert: "Mark the assignment completed first, then log hours."
-        return
-      end
+  # DELETE /admin_area/volunteer_assignments/:id
+  def destroy
+    volunteer_name = @assignment.volunteer.full_name
+    event_title = @assignment.event.title
 
-      if @assignment.update(log_hours_params)
-        redirect_to admin_area_volunteer_assignments_path, notice: "Hours logged."
-      else
-        redirect_to admin_area_volunteer_assignments_path, alert: @assignment.errors.full_messages.to_sentence
-      end
+    @assignment.destroy
+
+    flash[:success] = "Removed #{volunteer_name} from #{event_title}."
+    redirect_to admin_area_volunteer_assignments_path
+  end
+
+  # PATCH /admin_area/volunteer_assignments/:id/approve
+  def approve
+    if @assignment.update(status: "approved")
+      flash[:success] = "Assignment approved successfully."
+    else
+      flash[:alert] = "Failed to approve assignment."
     end
+    redirect_to admin_area_volunteer_assignments_path
+  end
 
-    # DELETE /admin_area/volunteer_assignments/:id
-    def destroy
-      @assignment.destroy
-      redirect_to admin_area_volunteer_assignments_path, notice: "Assignment removed."
+  # PATCH /admin_area/volunteer_assignments/:id/reject
+  def reject
+    if @assignment.update(status: "cancelled")
+      flash[:success] = "Assignment rejected successfully."
+    else
+      flash[:alert] = "Failed to reject assignment."
     end
+    redirect_to admin_area_volunteer_assignments_path
+  end
 
-    private
+  private
 
-    def set_assignment
-      @assignment = VolunteerAssignment.find(params[:id])
-    end
+  def set_assignment
+    @assignment = VolunteerAssignment.find(params[:id])
+  end
 
-    def log_hours_params
-      params.require(:volunteer_assignment).permit(:hours_worked, :date_logged)
-    end
+  def assignment_params
+    params.require(:volunteer_assignment).permit(
+      :volunteer_id,
+      :event_id,
+      :status,
+      :hours_worked,
+      :date_logged
+    )
   end
 end
