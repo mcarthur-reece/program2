@@ -1,39 +1,69 @@
-<h1>My Events</h1>
+<div style="max-width: 900px; margin: 50px auto; padding: 20px;">
 
-<% if @assignments.empty? %>
-  <p>You have not signed up for any events yet.</p>
-<% else %>
-  <table>
-    <thead>
-      <tr>
-        <th>Event</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Hours Worked</th>
-        <th>Date Logged</th>
-        <th></th>
-      </tr>
-    </thead>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="margin: 0; color: #343a40;">My Events</h1>
+    <%= link_to "Browse Events", events_path,
+        style: "padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
+  </div>
 
-    <tbody>
-      <% @assignments.each do |a| %>
-        <tr>
-          <td><%= link_to a.event.title, event_path(a.event) %></td>
-          <td><%= a.event.event_date %></td>
-          <td><%= a.status %></td>
-          <td><%= a.hours_worked || "-" %></td>
-          <td><%= a.date_logged || "-" %></td>
-          <td>
-            <% if a.pending? || a.approved? %>
-              <%= link_to "Withdraw",
-                          volunteer_assignment_path(a),
-                          data: { turbo_method: :delete, turbo_confirm: "Withdraw from this event?" } %>
-            <% else %>
-              -
-            <% end %>
-          </td>
+  <% if @assignments.empty? %>
+    <p style="text-align: center; padding: 40px; background-color: #f8f9fa; border-radius: 8px; color: #6c757d; font-size: 16px;">
+      You haven't signed up for any events yet.
+      <%= link_to "Browse available events", events_path, style: "color: #007bff; font-weight: bold;" %>
+    </p>
+  <% else %>
+    <table style="width: 100%; border-collapse: collapse; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
+      <thead>
+        <tr style="background-color: #343a40; color: white;">
+          <th style="padding: 12px 16px; text-align: left;">Event</th>
+          <th style="padding: 12px 16px; text-align: left; width: 120px;">Date</th>
+          <th style="padding: 12px 16px; text-align: center; width: 110px;">Status</th>
+          <th style="padding: 12px 16px; text-align: center; width: 110px;">Hours Worked</th>
+          <th style="padding: 12px 16px; text-align: center; width: 120px;">Date Logged</th>
+          <th style="padding: 12px 16px; text-align: center; width: 100px;">Action</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
+      </thead>
+
+      <tbody>
+        <% @assignments.each do |a| %>
+          <tr style="border-bottom: 1px solid #dee2e6;">
+            <td style="padding: 12px 16px;">
+              <%= link_to a.event.title, event_path(a.event),
+                  style: "color: #007bff; text-decoration: none; font-weight: 500;" %>
+            </td>
+            <td style="padding: 12px 16px; color: #495057;">
+              <%= a.event.event_date&.strftime('%m/%d/%Y') || 'TBD' %>
+            </td>
+            <td style="padding: 12px 16px; text-align: center;">
+              <% status_colors = { 'pending' => '#ffc107', 'approved' => '#28a745', 'rejected' => '#dc3545', 'withdrawn' => '#6c757d', 'completed' => '#007bff' } %>
+              <span style="padding: 4px 10px; border-radius: 12px; background-color: <%= status_colors[a.status] || '#6c757d' %>; color: white; font-size: 12px; font-weight: bold; text-transform: uppercase;">
+                <%= a.status %>
+              </span>
+            </td>
+            <td style="padding: 12px 16px; text-align: center; color: #495057;">
+              <%= a.hours_worked || "-" %>
+            </td>
+            <td style="padding: 12px 16px; text-align: center; color: #495057;">
+              <%= a.date_logged&.strftime('%m/%d/%Y') || "-" %>
+            </td>
+            <td style="padding: 12px 16px; text-align: center;">
+              <% if a.pending? || a.approved? %>
+                <%= link_to "Withdraw", volunteer_assignment_path(a),
+                    data: { turbo_method: :delete, turbo_confirm: "Withdraw from this event?" },
+                    style: "padding: 6px 12px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold;" %>
+              <% else %>
+                <span style="color: #adb5bd;">—</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <div style="margin-top: 30px;">
+    <%= link_to "← Back to Dashboard", volunteer_path(current_user),
+        style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+  </div>
+
+</div>
