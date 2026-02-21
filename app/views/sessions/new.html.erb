@@ -1,23 +1,39 @@
-<div style="max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-  <h1>Login</h1>
-  
-  <%= form_with(url: login_path, scope: :session, local: true) do |f| %>
-    <div style="margin-bottom: 15px;">
-      <%= f.label :username, "Username:" %>
-      <%= f.text_field :username, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+<div style="max-width: 420px; margin: 80px auto; padding: 20px;">
+
+  <div style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
+
+    <div style="background-color: #343a40; padding: 24px 28px;">
+      <h1 style="margin: 0; color: white; font-size: 22px; font-weight: 600;">Welcome Back</h1>
+      <p style="margin: 6px 0 0 0; color: #adb5bd; font-size: 14px;">Sign in to your account</p>
     </div>
-    
-    <div style="margin-bottom: 15px;">
-      <%= f.label :password, "Password:" %>
-      <%= f.password_field :password, required: true, style: "width: 100%; padding: 8px; margin-top: 5px;" %>
+
+    <div style="padding: 28px;">
+      <%= form_with(url: login_path, scope: :session, local: true) do |f| %>
+
+        <div style="margin-bottom: 20px;">
+          <%= f.label :username, "Username", style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+          <%= f.text_field :username, required: true,
+              style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <%= f.label :password, "Password", style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+          <%= f.password_field :password, required: true,
+              style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+        </div>
+
+        <%= f.submit "Log In",
+            style: "width: 100%; padding: 11px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer;" %>
+
+      <% end %>
     </div>
-    
-    <div style="margin-bottom: 15px;">
-      <%= f.submit "Log In", style: "padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;" %>
+
+    <div style="background-color: #f8f9fa; padding: 16px 28px; border-top: 1px solid #dee2e6; text-align: center;">
+      <p style="margin: 0; color: #6c757d; font-size: 14px;">
+        Don't have an account? <%= link_to "Sign up as a volunteer", signup_path, style: "color: #007bff; font-weight: 600; text-decoration: none;" %>
+      </p>
     </div>
-  <% end %>
-  
-  <p style="margin-top: 20px;">
-    Don't have an account? <%= link_to "Sign up as a volunteer", signup_path %>
-  </p>
+
+  </div>
+
 </div>
