@@ -12,7 +12,12 @@ class VolunteerAssignmentsController < ApplicationController
   def destroy
     assignment = current_user.volunteer_assignments.find(params[:id])
 
-    # Either approach is acceptable; hard-delete is simplest and releases the slot immediately.
+    if assignment.completed?
+      flash[:alert] = "You cannot withdraw from a completed event."
+      return redirect_to volunteer_assignments_path, status: :see_other
+    end
+
+    # Hard-delete is simplest and releases the slot immediately.
     assignment.destroy
 
     flash[:success] = "You have withdrawn from the event."

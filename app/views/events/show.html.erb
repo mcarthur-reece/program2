@@ -1,29 +1,89 @@
-<h1><%= @event.title %></h1>
+<div style="max-width: 800px; margin: 50px auto; padding: 20px;">
 
-<p><strong>Description:</strong> <%= @event.description %></p>
-<p><strong>Location:</strong> <%= @event.location %></p>
-<p><strong>Date:</strong> <%= @event.event_date %></p>
-<p><strong>Time:</strong> <%= @event.start_time.strftime("%H:%M") %> - <%= @event.end_time.strftime("%H:%M") %></p>
+  <div style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
 
-<p><strong>Required Volunteers:</strong> <%= @event.required_number_of_volunteers %></p>
-<p><strong>Approved Volunteers:</strong> <%= @event.volunteer_assignments.approved.count %></p>
-<p><strong>Status:</strong> <%= @event.status %></p>
+    <%# Header %>
+    <div style="background-color: #343a40; padding: 24px 28px;">
+      <h1 style="margin: 0 0 8px 0; color: white; font-size: 24px; font-weight: 600;"><%= @event.title %></h1>
+      <% status_colors = { 'open' => '#28a745', 'full' => '#ffc107', 'completed' => '#007bff', 'cancelled' => '#dc3545' } %>
+      <span style="padding: 4px 12px; border-radius: 12px; background-color: <%= status_colors[@event.status] || '#6c757d' %>; color: white; font-size: 12px; font-weight: bold; text-transform: uppercase;">
+        <%= @event.status %>
+      </span>
+    </div>
 
-<% if current_user %>
-  <% existing = @event.volunteer_assignments.find_by(volunteer_id: current_user.id) %>
+    <%# Details %>
+    <div style="padding: 28px;">
+      <% if @event.description.present? %>
+        <p style="margin: 0 0 24px 0; color: #495057; font-size: 15px; line-height: 1.6;"><%= @event.description %></p>
+        <hr style="border: none; border-top: 1px solid #dee2e6; margin-bottom: 24px;">
+      <% end %>
 
-  <% if existing.present? %>
-    <p><strong>Your signup status:</strong> <%= existing.status %></p>
-  <% elsif @event.open? %>
-    <%= button_to "Sign up for this event", signup_event_path(@event), method: :post %>
-  <% else %>
-    <p>This event is not available for sign-ups.</p>
-  <% end %>
-<% end %>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+        <div style="background-color: #f8f9fa; border-radius: 6px; padding: 14px 16px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 4px;">Location</div>
+          <div style="color: #343a40; font-size: 15px;"><%= @event.location %></div>
+        </div>
 
-<p>
-  <%= link_to "Back to Events", events_path %>
-  <% if admin_logged_in? %>
-    | <%= link_to "Edit", edit_event_path(@event) %>
-  <% end %>
-</p>
+        <div style="background-color: #f8f9fa; border-radius: 6px; padding: 14px 16px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 4px;">Date</div>
+          <div style="color: #343a40; font-size: 15px;"><%= @event.event_date&.strftime('%B %d, %Y') || 'TBD' %></div>
+        </div>
+
+        <div style="background-color: #f8f9fa; border-radius: 6px; padding: 14px 16px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 4px;">Time</div>
+          <div style="color: #343a40; font-size: 15px;"><%= @event.start_time.strftime("%H:%M") %> – <%= @event.end_time.strftime("%H:%M") %></div>
+        </div>
+
+        <div style="background-color: #f8f9fa; border-radius: 6px; padding: 14px 16px;">
+          <div style="font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; margin-bottom: 4px;">Volunteers</div>
+          <% approved = @event.volunteer_assignments.approved.count %>
+          <% required = @event.required_number_of_volunteers %>
+          <% percentage = required > 0 ? (approved.to_f / required * 100).round : 0 %>
+          <div style="color: #343a40; font-size: 15px;">
+            <span style="font-weight: bold; color: <%= percentage >= 100 ? '#28a745' : percentage >= 50 ? '#ffc107' : '#6c757d' %>"><%= approved %></span>
+            <span style="color: #6c757d;"> / <%= required %> filled</span>
+          </div>
+        </div>
+      </div>
+
+      <%# Volunteer signup section %>
+      <% if current_user %>
+        <% existing = @event.volunteer_assignments.find_by(volunteer_id: current_user.id) %>
+        <hr style="border: none; border-top: 1px solid #dee2e6; margin-bottom: 24px;">
+
+        <% if existing.present? %>
+          <% signup_colors = { 'pending' => '#ffc107', 'approved' => '#28a745', 'rejected' => '#dc3545', 'withdrawn' => '#6c757d' } %>
+          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <div style="background-color: #f8f9fa; border-radius: 6px; padding: 12px 16px;">
+              <span style="font-size: 13px; color: #6c757d; font-weight: 600; text-transform: uppercase;">Your status: </span>
+              <span style="font-weight: bold; color: <%= signup_colors[existing.status] || '#343a40' %>; text-transform: uppercase; font-size: 13px;"><%= existing.status %></span>
+            </div>
+            <% if existing.pending? || existing.approved? %>
+              <%= button_to "Withdraw from Event",
+                            volunteer_assignment_path(existing),
+                            method: :delete,
+                            data: { turbo_confirm: "Withdraw from this event?" },
+                            style: "padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer;" %>
+            <% end %>
+          </div>
+        <% elsif @event.open? %>
+          <%= button_to "Sign Up for This Event", signup_event_path(@event), method: :post,
+              style: "padding: 10px 24px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer;" %>
+        <% else %>
+          <p style="color: #6c757d; font-size: 14px; margin: 0;">This event is not currently available for sign-ups.</p>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Footer nav %>
+  <div style="margin-top: 24px; display: flex; gap: 12px;">
+    <%= link_to "← Back to Events", events_path,
+        style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+    <% if admin_logged_in? %>
+      <%= link_to "Edit Event", edit_event_path(@event),
+          style: "padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+    <% end %>
+  </div>
+
+</div>

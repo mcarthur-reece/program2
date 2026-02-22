@@ -1,58 +1,119 @@
-<%= form_with model: [:admin_area, volunteer] do |f| %>
-  <% if volunteer.errors.any? %>
-    <div style="padding:10px; border:1px solid #fca5a5; background:#fee2e2; margin-bottom:12px;">
-      <strong><%= pluralize(volunteer.errors.count, "error") %> prevented saving:</strong>
-      <ul>
-        <% volunteer.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
+<div style="max-width: 700px; margin: 50px auto; padding: 30px; border: 1px solid #ddd; border-radius: 8px; background-color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  <h1 style="margin-top: 0; margin-bottom: 30px; color: #343a40;"><%= volunteer.persisted? ? 'Edit Volunteer' : 'Create New Volunteer' %></h1>
+  
+  <%= form_with model: [:admin_area, volunteer], local: true do |f| %>
+    <% if volunteer.errors.any? %>
+      <div style="color: #721c24; background-color: #f8d7da; margin-bottom: 25px; padding: 15px; border: 1px solid #f5c6cb; border-radius: 4px;">
+        <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 18px;">
+          <%= pluralize(volunteer.errors.count, "error") %> prohibited this volunteer from being saved:
+        </h3>
+        <ul style="margin-bottom: 0; padding-left: 20px;">
+          <% volunteer.errors.full_messages.each do |msg| %>
+            <li style="margin-bottom: 5px;"><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Account Information Section -->
+    <div style="background-color: #e7f3ff; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #007bff;">
+      <h2 style="margin: 0 0 20px 0; color: #004085; font-size: 18px;">👤 Account Information</h2>
+      
+      <div style="margin-bottom: 20px;">
+        <%= f.label :username, "Username:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.text_field :username, 
+            disabled: volunteer.persisted?,
+            placeholder: volunteer.persisted? ? "" : "e.g., john_doe",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; box-sizing: border-box; background-color: #{volunteer.persisted? ? '#e9ecef' : 'white'};" %>
+        <% if volunteer.persisted? %>
+          <small style="color: #6c757d; font-size: 14px; display: block; margin-top: 5px;">
+            ⓘ Username cannot be changed after account creation
+          </small>
         <% end %>
-      </ul>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <%= f.label :full_name, "Full Name:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.text_field :full_name, 
+            placeholder: "e.g., John Doe",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; box-sizing: border-box;" %>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <%= f.label :email, "Email:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.email_field :email, 
+            placeholder: "e.g., john@example.com",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; box-sizing: border-box;" %>
+      </div>
+    </div>
+
+    <!-- Contact Information Section -->
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #28a745;">
+      <h2 style="margin: 0 0 20px 0; color: #495057; font-size: 18px;">📞 Contact Information</h2>
+      
+      <div style="margin-bottom: 20px;">
+        <%= f.label :phone_number, "Phone Number:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.text_field :phone_number, 
+            placeholder: "e.g., (555) 123-4567",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; box-sizing: border-box;" %>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <%= f.label :address, "Address:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.text_field :address, 
+            placeholder: "e.g., 123 Main St, City, State 12345",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; box-sizing: border-box;" %>
+      </div>
+    </div>
+
+    <!-- Skills & Interests Section -->
+    <div style="background-color: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #ffc107;">
+      <h2 style="margin: 0 0 20px 0; color: #856404; font-size: 18px;">⭐ Skills & Interests</h2>
+      
+      <div style="margin-bottom: 0;">
+        <%= f.label :skills_interests, "Skills / Interests:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.text_area :skills_interests, 
+            rows: 4,
+            placeholder: "e.g., Event planning, public speaking, community outreach, teaching...",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; resize: vertical; box-sizing: border-box;" %>
+      </div>
+    </div>
+
+    <!-- Password Section -->
+    <div style="background-color: #f8d7da; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #dc3545;">
+      <h2 style="margin: 0 0 10px 0; color: #721c24; font-size: 18px;">🔒 Password</h2>
+      
+      <% if volunteer.persisted? %>
+        <p style="color: #721c24; font-size: 14px; margin: 0 0 20px 0; background-color: #f8d7da; padding: 10px; border-radius: 4px; border: 1px solid #f5c6cb;">
+          ⓘ Leave password fields blank to keep the current password unchanged
+        </p>
+      <% else %>
+        <p style="color: #721c24; font-size: 14px; margin: 0 0 20px 0;">
+          Set a password for the new volunteer account (minimum 6 characters)
+        </p>
+      <% end %>
+
+      <div style="margin-bottom: 20px;">
+        <%= f.label :password, volunteer.persisted? ? "New Password:" : "Password:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.password_field :password, 
+            placeholder: "••••••••",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; box-sizing: border-box;" %>
+      </div>
+
+      <div style="margin-bottom: 0;">
+        <%= f.label :password_confirmation, "Confirm Password:", style: "display: block; margin-bottom: 5px; font-weight: bold; color: #495057;" %>
+        <%= f.password_field :password_confirmation, 
+            placeholder: "••••••••",
+            style: "width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px; box-sizing: border-box;" %>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="margin-top: 30px; display: flex; gap: 10px;">
+      <%= f.submit volunteer.persisted? ? "Update Volunteer" : "Create Volunteer", 
+          style: "flex: 1; padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;" %>
+      <%= link_to "Cancel", admin_area_volunteers_path, 
+          style: "flex: 1; padding: 12px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; text-align: center; font-size: 16px; font-weight: bold; display: block; box-sizing: border-box;" %>
     </div>
   <% end %>
-
-  <div>
-    <%= f.label :username %><br>
-    <%= f.text_field :username, disabled: true %>
-  </div><br>
-
-  <div>
-    <%= f.label :full_name %><br>
-    <%= f.text_field :full_name %>
-  </div><br>
-
-  <div>
-    <%= f.label :email %><br>
-    <%= f.email_field :email %>
-  </div><br>
-
-  <div>
-    <%= f.label :phone_number %><br>
-    <%= f.text_field :phone_number %>
-  </div><br>
-
-  <div>
-    <%= f.label :address %><br>
-    <%= f.text_field :address %>
-  </div><br>
-
-  <div>
-    <%= f.label :skills_interests, "Skills / Interests" %><br>
-    <%= f.text_area :skills_interests %>
-  </div><br>
-
-  <hr>
-
-  <p><strong>Password</strong> (leave blank on edit to keep unchanged)</p>
-
-  <div>
-    <%= f.label :password %><br>
-    <%= f.password_field :password %>
-  </div><br>
-
-  <div>
-    <%= f.label :password_confirmation %><br>
-    <%= f.password_field :password_confirmation %>
-  </div><br>
-
-  <%= f.submit %>
-<% end %>
+</div>

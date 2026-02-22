@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   get  "/signup", to: "volunteers#new"
   post "/signup", to: "volunteers#create"
 
-  resources :volunteers, except: [:new, :create]
+  resources :volunteers, except: [ :new, :create ]
   resources :events
 
   # Existing signup route (works)
@@ -29,25 +29,25 @@ Rails.application.routes.draw do
   # get "/admin", to: "admin#dashboard"
   get "/admin", to: "admins#dashboard", as: :admin
 
-  # editing profile 
-  get  "/admin/profile/edit", to: "admins#edit_profile",   as: :edit_admin_profile
+  # editing profile
+  get "/admin/profile/edit", to: "admins#edit_profile",   as: :edit_admin_profile
   patch "/admin/profile",     to: "admins#update_profile", as: :admin_profile
-  #admin volunteer and event routes 
+  # admin volunteer and event routes
   namespace :admin_area do
+    get "analytics", to: "analytics#index", as: :analytics
+
     resources :volunteers
     resources :events
-    resources :volunteer_assignments, only: [:index, :destroy] do
+    resources :volunteer_assignments do
       member do
         patch :approve
         patch :reject
         patch :mark_completed
         patch :log_hours
       end
-    end 
+    end
   end
-
 
   # Add these for "My Events" + Withdraw (Person 2)
   resources :volunteer_assignments, only: [:index, :destroy]
-
 end
