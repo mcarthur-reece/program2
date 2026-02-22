@@ -14,7 +14,7 @@ class AdminArea::AnalyticsController < ApplicationController
     @top_n = [[requested_top_n, 1].max, 50].min
 
     # Base scope: only completed assignments
-    base_scope = VolunteerAssignment.completed.includes(:volunteer, :event)
+    base_scope = VolunteerAssignment.completed
 
     # Date range filter (by event_date)
     if @start_date.present?
@@ -25,30 +25,35 @@ class AdminArea::AnalyticsController < ApplicationController
     end
 
     # Event filter
-    if @event_id.present?
-      base_scope = base_scope.where(event_id: @event_id)
-    end
+    base_scope = base_scope.where(event_id: @event_id) if @event_id.present?
 
     # Volunteer filter (optional)
-    if @volunteer_id.present?
-      base_scope = base_scope.where(volunteer_id: @volunteer_id)
-    end
+    base_scope = base_scope.where(volunteer_id: @volunteer_id) if @volunteer_id.present?
 
     # 1) Volunteer Activity Summary
-    @volunteer_stats = base_scope.group(:volunteer_id)
-                                 .select("volunteer_id,
-                                          COUNT(DISTINCT event_id) as event_count,
-                                          SUM(COALESCE(hours_worked, 0)) as total_hours,
-                                          AVG(COALESCE(hours_worked, 0)) as avg_hours")
-                                 .includes(:volunteer)
+    @volunteer_stats = base_scope.joins(:volunteer)
+                                 .group("volunteer_assignments.volunteer_id")
+                                 .select(
+                                   "volunteer_assignments.volunteer_id AS volunteer_id,
+                                    MIN(volunteers.full_name) AS volunteer_full_name,
+                                    MIN(volunteers.email) AS volunteer_email,
+                                    COUNT(DISTINCT volunteer_assignments.event_id) AS event_count,
+                                    SUM(COALESCE(volunteer_assignments.hours_worked, 0)) AS total_hours,
+                                    AVG(COALESCE(volunteer_assignments.hours_worked, 0)) AS avg_hours"
+                                 )
 
     # 2) Event Participation Summary
-    @event_stats = base_scope.group(:event_id)
-                             .select("event_id,
-                                      COUNT(DISTINCT volunteer_id) as volunteer_count,
-                                      SUM(COALESCE(hours_worked, 0)) as total_hours,
-                                      AVG(COALESCE(hours_worked, 0)) as avg_hours")
-                             .includes(:event)
+    @event_stats = base_scope.joins(:event)
+                             .group("volunteer_assignments.event_id")
+                             .select(
+                               "volunteer_assignments.event_id AS event_id,
+                                MIN(events.title) AS event_title,
+                                MIN(events.location) AS event_location,
+                                MIN(events.event_date) AS event_date,
+                                COUNT(DISTINCT volunteer_assignments.volunteer_id) AS volunteer_count,
+                                SUM(COALESCE(volunteer_assignments.hours_worked, 0)) AS total_hours,
+                                AVG(COALESCE(volunteer_assignments.hours_worked, 0)) AS avg_hours"
+                             )
 
     # 3) Top Volunteers (Top N)
     @top_by_hours = @volunteer_stats.reorder("total_hours DESC").limit(@top_n)
