@@ -90,7 +90,7 @@ Volunteer information is now updated, and will be reflected on the volunteer sid
 ## 🧪 Testing Guide 
 To test the application workflow:
 
-## Volunteer Testing
+### Volunteer Testing
 
 - Create a volunteer account via Sign Up.
 
@@ -100,7 +100,7 @@ To test the application workflow:
 
 - Withdraw and confirm it no longer appears.
 
-## Admin Testing
+### Admin Testing
 
 - Log in with the admin credentials.
 
