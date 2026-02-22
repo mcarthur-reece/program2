@@ -1,0 +1,85 @@
+<div style="max-width: 1400px; margin: 50px auto; padding: 20px;">
+  <h1 style="margin-bottom: 30px; color: #343a40;">Manage Events</h1>
+  
+  <div style="margin: 20px 0; display: flex; justify-content: space-between; align-items: center;">
+    <%= link_to "➕ Create New Event", new_admin_area_event_path, 
+        style: "padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
+    
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "All Events", admin_area_events_path, 
+          style: "padding: 8px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+      <%= link_to "Open", admin_area_events_path(status: 'open'), 
+          style: "padding: 8px 15px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px;" %>
+      <%= link_to "Full", admin_area_events_path(status: 'full'), 
+          style: "padding: 8px 15px; background-color: #ffc107; color: white; text-decoration: none; border-radius: 4px;" %>
+      <%= link_to "Completed", admin_area_events_path(status: 'completed'), 
+          style: "padding: 8px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;" %>
+    </div>
+  </div>
+  
+  <% if @events.empty? %>
+    <p style="text-align: center; padding: 40px; background-color: #f8f9fa; border-radius: 8px; color: #6c757d; font-size: 16px;">
+      No events found. <%= link_to "Create your first event", new_admin_area_event_path, style: "color: #007bff; font-weight: bold;" %>
+    </p>
+  <% else %>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <thead>
+        <tr style="background-color: #343a40; color: white;">
+          <th style="padding: 12px; text-align: left; width: 60px;">ID</th>
+          <th style="padding: 12px; text-align: left;">Title</th>
+          <th style="padding: 12px; text-align: left; width: 120px;">Date</th>
+          <th style="padding: 12px; text-align: left;">Location</th>
+          <th style="padding: 12px; text-align: center; width: 100px;">Status</th>
+          <th style="padding: 12px; text-align: center; width: 140px;">Volunteers</th>
+          <th style="padding: 12px; text-align: center; width: 200px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @events.each do |e| %>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px; color: #6c757d; font-weight: bold;"><%= e.id %></td>
+            <td style="padding: 12px; font-weight: 500;"><%= e.title %></td>
+            <td style="padding: 12px;"><%= e.event_date&.strftime('%m/%d/%Y') || 'N/A' %></td>
+            <td style="padding: 12px; color: #6c757d;"><%= e.location %></td>
+            <td style="padding: 12px; text-align: center;">
+              <% status_colors = {
+                'open' => '#28a745',
+                'full' => '#ffc107',
+                'completed' => '#007bff',
+                'cancelled' => '#dc3545'
+              } %>
+              <span style="padding: 4px 12px; border-radius: 12px; background-color: <%= status_colors[e.status] || '#6c757d' %>; color: white; font-size: 12px; font-weight: bold; text-transform: uppercase;">
+                <%= e.status %>
+              </span>
+            </td>
+            <td style="padding: 12px; text-align: center;">
+              <% approved = e.approved_volunteer_count %>
+              <% required = e.required_number_of_volunteers %>
+              <% percentage = required > 0 ? (approved.to_f / required * 100).round : 0 %>
+              <% color = percentage >= 100 ? '#28a745' : percentage >= 50 ? '#ffc107' : '#dc3545' %>
+              <span style="font-weight: bold; color: <%= color %>;">
+                <%= approved %>
+              </span>
+              <span style="color: #6c757d;"> / <%= required %></span>
+            </td>
+            <td style="padding: 12px; text-align: center;">
+              <%= link_to "View", admin_area_event_path(e), 
+                  style: "padding: 6px 12px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;" %>
+              <%= link_to "Edit", edit_admin_area_event_path(e), 
+                  style: "padding: 6px 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;" %>
+              <%= button_to "Delete", admin_area_event_path(e),
+                  method: :delete,
+                  data: { turbo_confirm: "Delete this event? This will also delete its volunteer assignments." },
+                  style: "padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px; display: inline-block; font-size: 14px;" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  
+  <div style="margin-top: 30px;">
+    <%= link_to "← Back to Dashboard", admin_path, 
+        style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+  </div>
+</div>

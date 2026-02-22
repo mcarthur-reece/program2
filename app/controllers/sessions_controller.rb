@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
     if current_user
       redirect_to volunteer_path(current_user)
     elsif current_admin
-      redirect_to admin_path # Will be created by Person 3
+      redirect_to admin_path
     end
   end
 
@@ -28,7 +28,7 @@ class SessionsController < ApplicationController
     if admin && admin.authenticate(password)
       session[:admin_id] = admin.id
       flash[:success] = "Welcome back, #{admin.name}!"
-      redirect_to root_path # Person 3 will change this to admin dashboard
+      redirect_to admin_path # Person 3 will change this to admin dashboard
       return
     end
 

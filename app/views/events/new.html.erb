@@ -1,56 +1,91 @@
-<%= form_with model: @event do |f| %>
-  <% if @event.errors.any? %>
-    <div>
-      <h2><%= pluralize(@event.errors.count, "error") %> prevented saving:</h2>
-      <ul>
-        <% @event.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
+<div style="max-width: 700px; margin: 50px auto; padding: 20px;">
+
+  <div style="background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="background-color: #343a40; padding: 20px 24px;">
+      <h2 style="margin: 0; color: white; font-size: 20px; font-weight: 600;">
+        <%= @event.new_record? ? "Create New Event" : "Edit Event" %>
+      </h2>
     </div>
-  <% end %>
 
-  <div>
-    <%= f.label :title %><br>
-    <%= f.text_field :title %>
+    <div style="padding: 30px 24px;">
+      <%= form_with model: @event do |f| %>
+        <% if @event.errors.any? %>
+          <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 6px; padding: 16px; margin-bottom: 24px;">
+            <h4 style="margin: 0 0 8px 0; color: #721c24; font-size: 15px;">
+              <%= pluralize(@event.errors.count, "error") %> prevented this event from being saved:
+            </h4>
+            <ul style="margin: 0; padding-left: 20px; color: #721c24; font-size: 14px;">
+              <% @event.errors.full_messages.each do |msg| %>
+                <li style="margin-bottom: 4px;"><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
+          <%# Full-width: Title %>
+          <div style="grid-column: 1 / -1;">
+            <%= f.label :title, style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.text_field :title, style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+          <%# Full-width: Description %>
+          <div style="grid-column: 1 / -1;">
+            <%= f.label :description, style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.text_area :description, rows: 4, style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; resize: vertical; outline: none;" %>
+          </div>
+
+          <%# Full-width: Location %>
+          <div style="grid-column: 1 / -1;">
+            <%= f.label :location, style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.text_field :location, style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+          <%# Date %>
+          <div>
+            <%= f.label :event_date, style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.date_field :event_date, style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+          <%# Volunteers Required %>
+          <div>
+            <%= f.label :required_number_of_volunteers, "Volunteers Required", style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.number_field :required_number_of_volunteers, min: 1, style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+          <%# Start Time %>
+          <div>
+            <%= f.label :start_time, style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.time_field :start_time, style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+          <%# End Time %>
+          <div>
+            <%= f.label :end_time, style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.time_field :end_time, style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+          <%# Status - full width %>
+          <div style="grid-column: 1 / -1;">
+            <%= f.label :status, style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.select :status, Event.statuses.keys.map { |s| [s.capitalize, s] },
+                {},
+                style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; background-color: white; box-sizing: border-box; outline: none;" %>
+          </div>
+
+        </div>
+
+        <%# Submit + Cancel %>
+        <div style="margin-top: 28px; display: flex; gap: 12px; align-items: center;">
+          <%= f.submit @event.new_record? ? "Create Event" : "Save Changes",
+              style: "padding: 10px 24px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer;" %>
+          <%= link_to "Cancel", events_path,
+              style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 15px; font-weight: 500;" %>
+        </div>
+
+      <% end %>
+    </div>
   </div>
 
-  <div>
-    <%= f.label :description %><br>
-    <%= f.text_area :description %>
-  </div>
-
-  <div>
-    <%= f.label :location %><br>
-    <%= f.text_field :location %>
-  </div>
-
-  <div>
-    <%= f.label :event_date %><br>
-    <%= f.date_field :event_date %>
-  </div>
-
-  <div>
-    <%= f.label :start_time %><br>
-    <%= f.time_field :start_time %>
-  </div>
-
-  <div>
-    <%= f.label :end_time %><br>
-    <%= f.time_field :end_time %>
-  </div>
-
-  <div>
-    <%= f.label :required_number_of_volunteers %><br>
-    <%= f.number_field :required_number_of_volunteers, min: 1 %>
-  </div>
-
-  <div>
-    <%= f.label :status %><br>
-    <%= f.select :status, Event.statuses.keys %>
-  </div>
-
-  <div>
-    <%= f.submit %>
-  </div>
-<% end %>
+</div>

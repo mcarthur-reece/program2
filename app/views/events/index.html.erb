@@ -1,38 +1,104 @@
-<h1>Events</h1>
-
-<% if admin_logged_in? %>
-  <p><%= link_to "New Event", new_event_path %></p>
-<% end %>
-
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Date</th>
-      <th>Location</th>
-      <th>Required</th>
-      <th>Approved</th>
-      <th>Status</th>
-      <th></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @events.each do |event| %>
-      <tr>
-        <td><%= link_to event.title, event_path(event) %></td>
-        <td><%= event.event_date %></td>
-        <td><%= event.location %></td>
-        <td><%= event.required_number_of_volunteers %></td>
-        <td><%= event.volunteer_assignments.approved.count %></td>
-        <td><%= event.status %></td>
-        <td>
-          <% if admin_logged_in? %>
-            <%= link_to "Edit", edit_event_path(event) %> |
-            <%= link_to "Delete", event_path(event), data: { turbo_method: :delete, turbo_confirm: "Delete this event?" } %>
-          <% end %>
-        </td>
-      </tr>
+<div style="max-width: 1400px; margin: 50px auto; padding: 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="margin: 0; color: #343a40;">
+      <% if admin_logged_in? %>
+        All Events
+      <% else %>
+        Available Events
+      <% end %>
+    </h1>
+    
+    <% if admin_logged_in? %>
+      <%= link_to "➕ Create New Event", new_event_path, 
+          style: "padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
     <% end %>
-  </tbody>
-</table>
+  </div>
+
+  <% if @events.empty? %>
+    <p style="text-align: center; padding: 40px; background-color: #f8f9fa; border-radius: 8px; color: #6c757d; font-size: 16px;">
+      <% if admin_logged_in? %>
+        No events yet. <%= link_to "Create your first event", new_event_path, style: "color: #007bff; font-weight: bold;" %>
+      <% else %>
+        No events available at the moment. Check back soon!
+      <% end %>
+    </p>
+  <% else %>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <thead>
+        <tr style="background-color: #343a40; color: white;">
+          <th style="padding: 12px; text-align: left;">Title</th>
+          <th style="padding: 12px; text-align: left; width: 120px;">Date</th>
+          <th style="padding: 12px; text-align: left;">Location</th>
+          <th style="padding: 12px; text-align: center; width: 100px;">Volunteers</th>
+          <th style="padding: 12px; text-align: center; width: 100px;">Status</th>
+          <% if admin_logged_in? %>
+            <th style="padding: 12px; text-align: center; width: 150px;">Actions</th>
+          <% else %>
+            <th style="padding: 12px; text-align: center; width: 120px;">Details</th>
+          <% end %>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @events.each do |event| %>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;">
+              <%= link_to event.title, event_path(event), 
+                  style: "color: #007bff; text-decoration: none; font-weight: 500;" %>
+            </td>
+            <td style="padding: 12px; color: #495057;">
+              <%= event.event_date&.strftime('%m/%d/%Y') || 'TBD' %>
+            </td>
+            <td style="padding: 12px; color: #6c757d;">
+              <%= event.location %>
+            </td>
+            <td style="padding: 12px; text-align: center;">
+              <% approved = event.volunteer_assignments.where(status: 'approved').count %>
+              <% required = event.required_number_of_volunteers %>
+              <% percentage = required > 0 ? (approved.to_f / required * 100).round : 0 %>
+              <span style="font-weight: bold; color: <%= percentage >= 100 ? '#28a745' : percentage >= 50 ? '#ffc107' : '#6c757d' %>;">
+                <%= approved %>
+              </span>
+              <span style="color: #6c757d;"> / <%= required %></span>
+            </td>
+            <td style="padding: 12px; text-align: center;">
+              <% status_colors = {
+                'open' => '#28a745',
+                'full' => '#ffc107',
+                'completed' => '#007bff',
+                'cancelled' => '#dc3545'
+              } %>
+              <span style="padding: 4px 12px; border-radius: 12px; background-color: <%= status_colors[event.status] || '#6c757d' %>; color: white; font-size: 12px; font-weight: bold; text-transform: uppercase;">
+                <%= event.status %>
+              </span>
+            </td>
+            <td style="padding: 12px; text-align: center;">
+              <% if admin_logged_in? %>
+                <%= link_to "Edit", edit_event_path(event), 
+                    style: "padding: 6px 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;" %>
+                <%= link_to "Delete", event_path(event), 
+                    data: { turbo_method: :delete, turbo_confirm: "Delete this event?" },
+                    style: "padding: 6px 12px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;" %>
+              <% else %>
+                <%= link_to "View", event_path(event), 
+                    style: "padding: 8px 16px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+
+  <% if current_user %>
+    <div style="margin-top: 30px;">
+      <%= link_to "← Back to Dashboard", volunteer_path(current_user), 
+          style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+    </div>
+  <% elsif admin_logged_in? %>
+    <div style="margin-top: 30px;">
+      <%= link_to "← Back to Dashboard", admin_path, 
+          style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+    </div>
+  <% end %>
+</div>

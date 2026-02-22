@@ -1,0 +1,72 @@
+<div style="max-width: 1400px; margin: 50px auto; padding: 20px;">
+  <h1 style="margin-bottom: 30px; color: #343a40;">Manage Volunteers</h1>
+  
+  <div style="margin: 20px 0; display: flex; justify-content: space-between; align-items: center;">
+    <%= link_to "➕ Create New Volunteer", new_admin_area_volunteer_path, 
+        style: "padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
+    
+    <div>
+      <span style="color: #6c757d; margin-right: 15px; font-weight: bold;">
+        Total Volunteers: <%= @volunteers.count %>
+      </span>
+    </div>
+  </div>
+  
+  <% if @volunteers.empty? %>
+    <p style="text-align: center; padding: 40px; background-color: #f8f9fa; border-radius: 8px; color: #6c757d; font-size: 16px;">
+      No volunteers found. <%= link_to "Create your first volunteer", new_admin_area_volunteer_path, style: "color: #007bff; font-weight: bold;" %>
+    </p>
+  <% else %>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <thead>
+        <tr style="background-color: #343a40; color: white;">
+          <th style="padding: 12px; text-align: left; width: 60px;">ID</th>
+          <th style="padding: 12px; text-align: left;">Username</th>
+          <th style="padding: 12px; text-align: left;">Full Name</th>
+          <th style="padding: 12px; text-align: left;">Email</th>
+          <th style="padding: 12px; text-align: center; width: 120px;">Total Hours</th>
+          <th style="padding: 12px; text-align: center; width: 200px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @volunteers.each do |v| %>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px; color: #6c757d; font-weight: bold;"><%= v.id %></td>
+            <td style="padding: 12px;">
+              <span style="font-family: monospace; background-color: #e9ecef; padding: 4px 8px; border-radius: 4px;">
+                <%= v.username %>
+              </span>
+            </td>
+            <td style="padding: 12px; font-weight: 500;"><%= v.full_name %></td>
+            <td style="padding: 12px; color: #6c757d;">
+              <a href="mailto:<%= v.email %>" style="color: #007bff; text-decoration: none;">
+                <%= v.email %>
+              </a>
+            </td>
+            <td style="padding: 12px; text-align: center;">
+              <span style="font-weight: bold; color: #28a745; font-size: 16px;">
+                <%= v.total_hours || 0 %>
+              </span>
+              <span style="color: #6c757d; font-size: 12px;">hrs</span>
+            </td>
+            <td style="padding: 12px; text-align: center;">
+              <%= link_to "View", admin_area_volunteer_path(v), 
+                  style: "padding: 6px 12px; background-color: #17a2b8; color: white; text-decoration: none; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;" %>
+              <%= link_to "Edit", edit_admin_area_volunteer_path(v), 
+                  style: "padding: 6px 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 2px; display: inline-block; font-size: 14px;" %>
+              <%= button_to "Delete", admin_area_volunteer_path(v),
+                  method: :delete,
+                  data: { turbo_confirm: "Delete this volunteer? This will also delete all their assignments." },
+                  style: "padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px; display: inline-block; font-size: 14px;" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+  
+  <div style="margin-top: 30px;">
+    <%= link_to "← Back to Dashboard", admin_path, 
+        style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px;" %>
+  </div>
+</div>
