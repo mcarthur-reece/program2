@@ -34,6 +34,8 @@ Rails.application.routes.draw do
   patch "/admin/profile",     to: "admins#update_profile", as: :admin_profile
   # admin volunteer and event routes
   namespace :admin_area do
+    get "analytics", to: "analytics#index", as: :analytics
+
     resources :volunteers
     resources :events
     resources :volunteer_assignments do
@@ -46,7 +48,6 @@ Rails.application.routes.draw do
     end
   end
 
-
   # Add these for "My Events" + Withdraw (Person 2)
-  resources :volunteer_assignments, only: [ :index, :destroy ]
+  resources :volunteer_assignments, only: [:index, :destroy]
 end
