@@ -1,0 +1,232 @@
+<%# app/views/admin_area/analytics/index.html.erb %>
+
+<div style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px;">
+    <div>
+      <h1 style="margin: 0; color: #212529; font-size: 28px; font-weight: 700;">Admin Analytics</h1>
+      <p style="margin: 6px 0 0 0; color: #6c757d; font-size: 14px;">
+        Only <strong>completed</strong> volunteer assignments are included.
+      </p>
+    </div>
+
+    <%= link_to "← Back to Admin Dashboard", admin_path,
+      style: "padding: 10px 14px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;" %>
+  </div>
+
+  <%# Filters %>
+  <div style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border: 1px solid #e9ecef; border-radius: 12px; padding: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <h2 style="margin: 0 0 12px 0; color: #343a40; font-size: 18px;">Filters</h2>
+
+    <%= form_with url: admin_area_analytics_path, method: :get, local: true do %>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; align-items: end;">
+        <div>
+          <label style="display:block; font-size: 12px; font-weight: 700; color: #495057; margin-bottom: 6px;">Start date</label>
+          <%= date_field_tag :start_date, @start_date, style: "width: 100%; padding: 10px 10px; border: 1px solid #ced4da; border-radius: 8px; outline: none;" %>
+        </div>
+
+        <div>
+          <label style="display:block; font-size: 12px; font-weight: 700; color: #495057; margin-bottom: 6px;">End date</label>
+          <%= date_field_tag :end_date, @end_date, style: "width: 100%; padding: 10px 10px; border: 1px solid #ced4da; border-radius: 8px; outline: none;" %>
+        </div>
+
+        <div>
+          <label style="display:block; font-size: 12px; font-weight: 700; color: #495057; margin-bottom: 6px;">Event</label>
+          <%= select_tag :event_id,
+                options_for_select([["All events", ""]] + @events.map { |e| ["#{e.title}", e.id] }, @event_id),
+                style: "width: 100%; padding: 10px 10px; border: 1px solid #ced4da; border-radius: 8px; outline: none; background-color: #fff;" %>
+        </div>
+
+        <div>
+          <label style="display:block; font-size: 12px; font-weight: 700; color: #495057; margin-bottom: 6px;">Volunteer</label>
+          <%= select_tag :volunteer_id,
+                options_for_select([["All volunteers", ""]] + @volunteers.map { |v| ["#{v.full_name} (#{v.username})", v.id] }, @volunteer_id),
+                style: "width: 100%; padding: 10px 10px; border: 1px solid #ced4da; border-radius: 8px; outline: none; background-color: #fff;" %>
+        </div>
+
+        <div>
+          <label style="display:block; font-size: 12px; font-weight: 700; color: #495057; margin-bottom: 6px;">Top N</label>
+          <%= number_field_tag :top_n, (@top_n.presence || 5), min: 1, max: 50,
+                style: "width: 100%; padding: 10px 10px; border: 1px solid #ced4da; border-radius: 8px; outline: none;" %>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+        <%= submit_tag "Apply Filters",
+              style: "padding: 10px 14px; background-color: #0d6efd; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;" %>
+
+        <%= link_to "Reset",
+              admin_area_analytics_path,
+              style: "padding: 10px 14px; background-color: #f8f9fa; color: #343a40; border: 1px solid #ced4da; border-radius: 8px; font-weight: 700; text-decoration: none;" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Helper for consistent table styling (simple, inline) %>
+  <% table_style = "width: 100%; border-collapse: collapse; background-color: #fff; border: 1px solid #e9ecef; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);" %>
+  <% th_style = "padding: 12px; text-align: left; background-color: #212529; color: #fff; font-size: 12px; letter-spacing: 0.02em; text-transform: uppercase;" %>
+  <% td_style = "padding: 12px; border-top: 1px solid #f1f3f5; color: #343a40; font-size: 14px;" %>
+  <% pill = ->(text, bg) { "<span style='display:inline-block; padding: 3px 10px; border-radius: 999px; background-color: #{bg}; color: white; font-weight: 800; font-size: 12px;'>#{ERB::Util.html_escape(text)}</span>".html_safe } %>
+
+  <%# 1) Volunteer Activity Summary %>
+  <div style="margin-top: 20px;">
+    <div style="display:flex; align-items:center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px;">
+      <h2 style="margin: 0; color: #343a40; font-size: 18px;">Volunteer Activity Summary</h2>
+      <div style="color: #6c757d; font-size: 13px;">
+        <%= pill.call("Completed only", "#198754") %>
+      </div>
+    </div>
+
+    <% if @volunteer_stats.blank? %>
+      <div style="padding: 14px; background-color: #fff3cd; border: 1px solid #ffecb5; border-radius: 10px; color: #664d03;">
+        No completed assignments found for the selected filters.
+      </div>
+    <% else %>
+      <table style="<%= table_style %>">
+        <thead>
+          <tr>
+            <th style="<%= th_style %>">Volunteer</th>
+            <th style="<%= th_style %>">Events</th>
+            <th style="<%= th_style %>">Total Hours</th>
+            <th style="<%= th_style %>">Avg Hours / Event</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @volunteer_stats.each do |row| %>
+            <tr>
+              <td style="<%= td_style %>">
+                <div style="font-weight: 800;"><%= row.volunteer&.full_name || "Volunteer ##{row.volunteer_id}" %></div>
+                <div style="color:#6c757d; font-size: 12px;"><%= row.volunteer&.email %></div>
+              </td>
+              <td style="<%= td_style %>"><%= row.try(:event_count).to_i %></td>
+              <td style="<%= td_style %>"><%= (row.try(:total_hours).to_f).round(2) %></td>
+              <td style="<%= td_style %>"><%= (row.try(:avg_hours).to_f).round(2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+
+  <%# 2) Event Participation Summary %>
+  <div style="margin-top: 24px;">
+    <h2 style="margin: 0 0 10px 0; color: #343a40; font-size: 18px;">Event Participation Summary</h2>
+
+    <% if @event_stats.blank? %>
+      <div style="padding: 14px; background-color: #fff3cd; border: 1px solid #ffecb5; border-radius: 10px; color: #664d03;">
+        No completed assignments found for the selected filters.
+      </div>
+    <% else %>
+      <table style="<%= table_style %>">
+        <thead>
+          <tr>
+            <th style="<%= th_style %>">Event</th>
+            <th style="<%= th_style %>">Volunteers</th>
+            <th style="<%= th_style %>">Total Hours</th>
+            <th style="<%= th_style %>">Avg Hours / Volunteer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @event_stats.each do |row| %>
+            <tr>
+              <td style="<%= td_style %>">
+                <div style="font-weight: 800;"><%= row.event&.title || "Event ##{row.event_id}" %></div>
+                <div style="color:#6c757d; font-size: 12px;">
+                  <%= row.event&.event_date&.strftime("%m/%d/%Y") || "TBD" %> • <%= row.event&.location %>
+                </div>
+              </td>
+              <td style="<%= td_style %>"><%= row.try(:volunteer_count).to_i %></td>
+              <td style="<%= td_style %>"><%= (row.try(:total_hours).to_f).round(2) %></td>
+              <td style="<%= td_style %>"><%= (row.try(:avg_hours).to_f).round(2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+
+  <%# 3) Top Volunteers %>
+  <div style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+    <div style="background-color: #ffffff; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+      <h2 style="margin: 0 0 10px 0; color: #343a40; font-size: 18px;">
+        Top <%= @top_n || 5 %> Volunteers (by Hours)
+      </h2>
+
+      <% if @top_by_hours.blank? %>
+        <div style="color:#6c757d;">No data.</div>
+      <% else %>
+        <ol style="margin: 0; padding-left: 18px;">
+          <% @top_by_hours.each do |row| %>
+            <li style="margin: 8px 0; color: #343a40;">
+              <strong><%= row.volunteer&.full_name || "Volunteer ##{row.volunteer_id}" %></strong>
+              <span style="color:#6c757d;">— <%= (row.try(:total_hours).to_f).round(2) %> hrs</span>
+            </li>
+          <% end %>
+        </ol>
+      <% end %>
+    </div>
+
+    <div style="background-color: #ffffff; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+      <h2 style="margin: 0 0 10px 0; color: #343a40; font-size: 18px;">
+        Top <%= @top_n || 5 %> Volunteers (by Events)
+      </h2>
+
+      <% if @top_by_events.blank? %>
+        <div style="color:#6c757d;">No data.</div>
+      <% else %>
+        <ol style="margin: 0; padding-left: 18px;">
+          <% @top_by_events.each do |row| %>
+            <li style="margin: 8px 0; color: #343a40;">
+              <strong><%= row.volunteer&.full_name || "Volunteer ##{row.volunteer_id}" %></strong>
+              <span style="color:#6c757d;">— <%= row.try(:event_count).to_i %> events</span>
+            </li>
+          <% end %>
+        </ol>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 4) Low participation %>
+  <div style="margin-top: 24px;">
+    <h2 style="margin: 0 0 10px 0; color: #343a40; font-size: 18px;">Low Participation Detection</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+      <div style="background-color: #ffffff; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h3 style="margin: 0 0 8px 0; font-size: 15px; color: #343a40;">
+          Inactive Overall
+          <span style="color:#6c757d; font-weight: 600;">(0 completed assignments ever)</span>
+        </h3>
+
+        <% if defined?(@inactive_volunteers_overall) && @inactive_volunteers_overall.present? %>
+          <ul style="margin: 0; padding-left: 18px;">
+            <% @inactive_volunteers_overall.each do |v| %>
+              <li style="margin: 6px 0;"><%= v.full_name %> <span style="color:#6c757d;">(<%= v.username %>)</span></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <div style="color:#6c757d;">None 🎉</div>
+        <% end %>
+      </div>
+
+      <div style="background-color: #ffffff; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h3 style="margin: 0 0 8px 0; font-size: 15px; color: #343a40;">
+          Inactive In Current Filter
+          <span style="color:#6c757d; font-weight: 600;">(0 completed assignments in scope)</span>
+        </h3>
+
+        <% if defined?(@inactive_volunteers_in_scope) && @inactive_volunteers_in_scope.present? %>
+          <ul style="margin: 0; padding-left: 18px;">
+            <% @inactive_volunteers_in_scope.each do |v| %>
+              <li style="margin: 6px 0;"><%= v.full_name %> <span style="color:#6c757d;">(<%= v.username %>)</span></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <div style="color:#6c757d;">None 🎉</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 18px; color: #6c757d; font-size: 12px;">
+    Tip: if you see zeros everywhere, mark an event as completed and then mark at least one assignment as completed with hours logged.
+  </div>
+</div>
