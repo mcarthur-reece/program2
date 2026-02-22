@@ -7,9 +7,9 @@ This application is deployed and accessbile at http://152.7.178.162:8080
 
 ## 🔐 Admin Credentials 
 Pre-configured admin account:
-Username: admin
-Password: password123
-Email: admin@volunteer.org
+- Username: admin
+- Password: password123
+- Email: admin@volunteer.org
 
 ## 📌 Feature Instructions
 Below are instructions for acessing key features in the application 
