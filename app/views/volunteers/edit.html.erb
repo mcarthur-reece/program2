@@ -26,7 +26,6 @@
           <strong>Note:</strong> Username cannot be changed. Leave password fields blank to keep your current password.
         </div>
 
-        <%# Profile fields %>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
 
           <div style="grid-column: 1 / -1;">
@@ -61,7 +60,6 @@
 
         </div>
 
-        <%# Change password section %>
         <hr style="border: none; border-top: 1px solid #dee2e6; margin: 28px 0;">
 
         <div style="margin-bottom: 20px;">
@@ -74,3 +72,26 @@
           <div>
             <%= f.label :password, "New Password", style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
             <%= f.password_field :password,
+                style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+          <div>
+            <%= f.label :password_confirmation, "Confirm New Password", style: "display: block; font-weight: 600; color: #343a40; margin-bottom: 6px; font-size: 14px;" %>
+            <%= f.password_field :password_confirmation,
+                style: "width: 100%; padding: 10px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 15px; color: #495057; box-sizing: border-box; outline: none;" %>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 28px; display: flex; gap: 12px; align-items: center;">
+          <%= f.submit "Update Profile",
+              style: "padding: 10px 24px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer;" %>
+          <%= link_to "Cancel", volunteer_path(@volunteer),
+              style: "padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-size: 15px; font-weight: 500;" %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+
+</div>
