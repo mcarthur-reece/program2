@@ -14,7 +14,7 @@ Pre-configured admin account:
 ## 📌 Feature Instructions
 Below are instructions for acessing key features in the application 
 
-### ✅ Volunteer Features
+### ✅ Core Volunteer Features
 ✅ Sign Up for an Event
 
 1. Log in as a volunteer.
@@ -40,7 +40,7 @@ Your status is pending until an admin approves you.
 
 The volunteer will be removed from the event.
 
-### 🛠️ Admin Features 
+### 🛠️ Core Admin Features 
 ➕ Create a New Event
 
 1. Log in using the admin credentials.
@@ -54,6 +54,7 @@ The volunteer will be removed from the event.
 5. Click “Create Event.”
 
 The new event will now appear in the events listing. 
+
 
 ⏱️ Log Volunteer Hours
 
@@ -70,6 +71,21 @@ The new event will now appear in the events listing.
 6. Click "Update Assignment" 
 
 Volunteer assignment hours are now logged. 
+
+
+✍️ Editing Volunteers 
+
+1. Log in as admin
+
+2. From Admin Dashboard, select the "Manage Volunteers" button
+
+3. Click "edit" icon under the "Actions" Tab
+
+4. Update any fields in the form
+
+5. Click the "Update Volunteer" button
+
+Volunteer information is now updated, and will be reflected on the volunteer side. 
 
 ## 🧪 Testing Guide 
 To test the application workflow:
