@@ -188,7 +188,7 @@ rails test test/models/volunteer_test.rb
 
 ## Development Notes
 
-- SQLite is used for development and testing
+- Postgresql is used for development and testing
 - For production deployment, consider switching to PostgreSQL
 - All passwords are encrypted using BCrypt
 
